@@ -20,8 +20,8 @@ app.post('/box', async (req, res) => {
         }
     
         const box: Box = {
-            title,
-            message,
+            title: title,
+            
             createdAt: admin.firestore.FieldValue.serverTimestamp(),
         };
     
