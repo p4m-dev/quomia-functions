@@ -9,20 +9,23 @@ const app = express();
 
 app.use(express.json());
 
+console.log("Current Firebase Project:", admin.app().options.projectId);
+
 // Create Box
 app.post('/box', async (req, res) => {
     try {
-        const { title, message } = req.body;
+        const { title, type, date, time, category } = req.body;
     
-        // Validazione dei dati
-        if (!title || !message) {
+        /*if (!title || !message) {
           return res.status(400).json({ error: "Name and expiration are required" });
-        }
+        }*/
     
         const box: Box = {
             title: title,
-            
-            createdAt: admin.firestore.FieldValue.serverTimestamp(),
+            type: type,
+            date: date,
+            time: time,
+            category: category
         };
     
         const docRef = await db.collection("boxes").add(box);
@@ -37,4 +40,4 @@ app.get('/box', async (req, res) => {
 
 });
 
-exports.boxes = onRequest(app);
+exports.api = onRequest(app);
