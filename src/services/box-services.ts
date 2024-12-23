@@ -20,7 +20,11 @@ const isDateAvailable = async (dateMoment: moment.Moment): Promise<boolean> => {
 const generateDeliveryDate = async (startDate: string, type: string): Promise<Date> => {
     const deliveryDate = getDeliveryDate(startDate);
     const isAvailable = await isDateAvailable(deliveryDate);
-    return type === 'rewind' && isAvailable ? deliveryDate.toDate() : new Date();
+
+    if (type === 'rewind' && isAvailable) {
+        return deliveryDate.toDate();
+    }
+    throw new Error('Delivery date cannot be generated! Temporal slot not available!');
 };
 
 export {

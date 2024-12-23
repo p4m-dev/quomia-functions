@@ -39,10 +39,13 @@ app.post("/box", async (req: Request, res: Response) => {
     const parsedStartDate = parseDate(startDate);
     const parsedEndDate = parseDate(endDate);
 
-    const check = await checkBoxAlreadyPurchased(parsedStartDate, parsedEndDate);
+    // Skip on rewind
+    if (type !== 'rewind') { 
+      const check = await checkBoxAlreadyPurchased(parsedStartDate, parsedEndDate);
 
-    if (check) {
-      return res.status(409).json({ error: "Box temporale non disponibile!" });
+      if (check) {
+        return res.status(409).json({ error: "Box temporale non disponibile!" });
+      }
     }
 
     const deliveryDate = await generateDeliveryDate(startDate, type);

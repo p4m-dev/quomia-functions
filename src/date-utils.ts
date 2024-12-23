@@ -8,8 +8,14 @@ const parseDate = (dateStr: string) => {
 
 const getDeliveryDate = (startDate: string): Moment => {
     const startMoment = moment(startDate, DATE_FORMAT);
-    const currentYear = moment().year();
-    return startMoment.year(currentYear);
+    const currentDate = moment();
+    const currentYear = currentDate.year();
+    const futureDate = startMoment.year(currentYear);
+
+    if (futureDate.isBefore(currentDate)) {
+        futureDate.year(currentYear + 1);
+    }
+    return futureDate;
 }
 
 export {
