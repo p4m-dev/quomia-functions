@@ -1,31 +1,16 @@
 import { onRequest } from "firebase-functions/v2/https";
-import { Box, Category, Type } from "./types";
-import { cert, initializeApp } from "firebase-admin/app";
-import { FieldValue, getFirestore } from "firebase-admin/firestore";
-import { Credentials } from "./credentials";
+import { Box } from "./types";
+import { parseDate } from "./date-utils";
+import { checkBoxAlreadyPurchased, generateDeliveryDate } from "./services/box-services";
+import { FieldValue } from "firebase-admin/firestore";
+import { collBoxes } from "./config";
 import express, { Request, Response } from 'express';
-import serviceAccountKey from "./res/serviceAccountKey.json";
-
-const credentials: Credentials = {
-  projectId: serviceAccountKey.project_id,
-  clientEmail: serviceAccountKey.client_email,
-  privateKey: serviceAccountKey.private_key,
-};
-
-initializeApp({
-  credential: cert({
-    projectId: credentials.projectId,
-    clientEmail: credentials.clientEmail,
-    privateKey: credentials.privateKey
-  })
-});
-
-const db = getFirestore();
+import { generateAccessCode } from "./box-utils";
 
 const app = express();
 app.use(express.json());
 
-const checkCategory = (category: Category): void => {
+/*const checkCategory = (category: Category): void => {
   if (![Category.INTERACTIVE, Category.TEXT].includes(category)) {
     throw new Error('Categoria non valida');
   }
@@ -35,33 +20,50 @@ const checkType = (type: Type): void => {
   if (![Type.FUTURE, Type.REWIND, Type.MESSAGE_IN_A_BOTTLE].includes(type)) {
     throw new Error('Tipo non valido');
   }
-};
+};*/
 
 app.post("/box", async (req: Request, res: Response) => {
   try {
-    const { title, type, startDate, endDate, category, message, filePath, user } = req.body;
+    const { title, type, startDate, endDate, category, message, 
+      filePath, sender, receiver, isAnonymous } = req.body;
 
-    if (!title || !type || !startDate || !endDate || !category) {
+    if (!title || !type || !startDate || !endDate || !category || !sender) {
       return res.status(400).json({ error: "Campi obbligatori mancanti" });
     }
 
-    // Validazione di categoria e tipo
-    checkCategory(category);
-    checkType(type);
+    console.log(category, type);
+
+    //checkCategory(category);
+    //checkType(type);
+
+    const parsedStartDate = parseDate(startDate);
+    const parsedEndDate = parseDate(endDate);
+
+    const check = await checkBoxAlreadyPurchased(parsedStartDate, parsedEndDate);
+
+    if (check) {
+      return res.status(409).json({ error: "Box temporale non disponibile!" });
+    }
+
+    const deliveryDate = await generateDeliveryDate(startDate, type);
 
     const box: Box = {
       title,
       type,
-      startDate: new Date(startDate),
-      endDate: new Date(endDate),
+      startDate: parsedStartDate,
+      endDate: parsedEndDate,
+      deliveryDate: deliveryDate,
       category,
-      message: message ?? '',
-      filePath: filePath ?? '',
-      user: user ?? '',
+      message: message ?? null,
+      filePath: filePath ?? null,
+      sender: sender,
+      receiver: receiver ?? null,
+      isAnonymous: isAnonymous ?? false,
+      accessCode: generateAccessCode(),
       createdAt: FieldValue.serverTimestamp(),
     };
 
-    const docRef = await db.collection("boxes").add(box);
+    const docRef = await collBoxes.add(box);
     const createdBox = await docRef.get();
 
     return res.status(201).json({ id: docRef.id, ...createdBox.data() });
@@ -76,17 +78,17 @@ app.post("/box", async (req: Request, res: Response) => {
 
 app.get("/box", async (req: Request, res: Response) => {
   try {
-    const viralBoxes: Box[] = [];
-    const snapshot = await db.collection("boxes")
-      .where("type", "==", Type.MESSAGE_IN_A_BOTTLE)
+    const boxes: Box[] = [];
+    const snapshot = await collBoxes
+      .where("type", "==", 'message_in_a_bottle')
       .orderBy('createdAt', 'desc')
       .get();
 
     snapshot.forEach(doc => {
-      viralBoxes.push({ ...(doc.data() as Box) });
+      boxes.push({ ...(doc.data() as Box) });
     });
 
-    return res.status(200).json({ viralBoxes });
+    return res.status(200).json({ boxes });
   } catch (error) {
     console.error("Errore nel recupero delle boxes:", error);
     return res.status(500).json({ error: "Errore interno del server" });

@@ -11,14 +11,17 @@ export enum Type {
 
 export interface Box {
   title: string;
-  user?: string;
+  sender: string;
+  receiver?: string;
   message?: string;
   type: Type;
   category: Category;
   startDate: Date;
   endDate: Date;
+  deliveryDate: Date;
   filePath?: string;
   isAnonymous?: boolean;
+  accessCode: string;
   createdAt?: FirebaseFirestore.FieldValue;
   updatedAt?: FirebaseFirestore.FieldValue;
 }
