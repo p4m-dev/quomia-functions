@@ -9,19 +9,35 @@ export enum Type {
   MESSAGE_IN_A_BOTTLE
 }
 
-export interface Box {
+export interface Info {
   title: string;
-  sender: string;
-  receiver?: string;
-  message?: string;
   type: Type;
   category: Category;
+  isAnonymous?: boolean;
+  accessCode: string;
+}
+
+export interface Content {
+  message?: string;
+  filePath?: string;
+}
+
+export interface Dates {
   startDate: Date;
   endDate: Date;
   deliveryDate: Date;
-  filePath?: string;
-  isAnonymous?: boolean;
-  accessCode: string;
   createdAt?: FirebaseFirestore.FieldValue;
   updatedAt?: FirebaseFirestore.FieldValue;
+}
+
+export interface User {
+  sender: string;
+  receiver?: string;
+}
+
+export interface Box {
+  info: Info,
+  content: Content,
+  dates: Dates,
+  user: User
 }

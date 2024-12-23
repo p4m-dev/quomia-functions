@@ -48,20 +48,28 @@ app.post("/box", async (req: Request, res: Response) => {
     const deliveryDate = await generateDeliveryDate(startDate, type);
 
     const box: Box = {
-      title,
-      type,
-      startDate: parsedStartDate,
-      endDate: parsedEndDate,
-      deliveryDate: deliveryDate,
-      category,
-      message: message ?? null,
-      filePath: filePath ?? null,
-      sender: sender,
-      receiver: receiver ?? null,
-      isAnonymous: isAnonymous ?? false,
-      accessCode: generateAccessCode(),
-      createdAt: FieldValue.serverTimestamp(),
-    };
+      info: {
+        title,
+        type,
+        category,
+        isAnonymous: isAnonymous ?? false,
+        accessCode: generateAccessCode()
+      },
+      content: {
+        message: message ?? null,
+        filePath: filePath ?? null,
+      },
+      dates: {
+        startDate: parsedStartDate,
+        endDate: parsedEndDate,
+        deliveryDate: deliveryDate,
+        createdAt: FieldValue.serverTimestamp(),
+      },
+      user: {
+        sender: sender,
+        receiver: receiver ?? null,
+      }
+    }
 
     const docRef = await collBoxes.add(box);
     const createdBox = await docRef.get();
@@ -80,7 +88,7 @@ app.get("/box", async (req: Request, res: Response) => {
   try {
     const boxes: Box[] = [];
     const snapshot = await collBoxes
-      .where("type", "==", 'message_in_a_bottle')
+      .where("info.type", "==", 'message_in_a_bottle')
       .orderBy('createdAt', 'desc')
       .get();
 

@@ -4,8 +4,8 @@ import { getDeliveryDate } from "../date-utils";
 
 const checkBoxAlreadyPurchased = async (queryStartDate: Date, queryEndDate: Date) => {
     const docs = await collBoxes
-        .where("startDate", "<=", queryStartDate)
-        .where("endDate", ">=", queryEndDate)
+        .where("dates.startDate", "<=", queryStartDate)
+        .where("dates.endDate", ">=", queryEndDate)
         .get();
 
     return !docs.empty;
@@ -13,7 +13,7 @@ const checkBoxAlreadyPurchased = async (queryStartDate: Date, queryEndDate: Date
 
 const isDateAvailable = async (dateMoment: moment.Moment): Promise<boolean> => {
     const dateTimestamp = Timestamp.fromDate(dateMoment.toDate());
-    const docs = await collBoxes.where("deliveryDate", "==", dateTimestamp).get();
+    const docs = await collBoxes.where("dates.deliveryDate", "==", dateTimestamp).get();
     return docs.empty;
 }
 
