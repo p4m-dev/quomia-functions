@@ -1,48 +1,96 @@
-import * as express from "express";
-import * as admin from "firebase-admin";
 import { onRequest } from "firebase-functions/v2/https";
-import { Box } from "./types";
+import { Box, Category, Type } from "./types";
+import { cert, initializeApp } from "firebase-admin/app";
+import { FieldValue, getFirestore } from "firebase-admin/firestore";
+import { Credentials } from "./credentials";
+import express, { Request, Response } from 'express';
+import serviceAccountKey from "./res/serviceAccountKey.json";
 
-admin.initializeApp({
-  credential: admin.credential.cert({
-    projectId: "quomia",
-    privateKey: "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCpIjeplAr0Yd1k\nbkkd7ZRdfUtJMQiR5/X4twY/shqF28OcFkisugnYkcnkjdvkkD0+ivl8A5JWKQTS\nAjGRYnWKuC7KGqhiUX1PGIdR1RyI1GlpzXYI635RA8BfnhBucxfZKO5VqQRb1dLH\nDJl/SWHzk8G4lCiHZmB5dQhWVLTeGAC9Jwexqtim3eQ14VytHG67OkA53FLxF6Io\nt3QDfc47sZbf2pQ7RRFrnDrvL9PnkprVS0+kDsFqgHTKsZYEmI0sVrYw3p5UVVd4\nSsd/yQB0DAI5dYdyiJmNrfYSbNKtyVybmMwUexKrx/hghi6B9R7b5CGn29qm8joA\n+kVRQQxDAgMBAAECggEAALasvnHp8+r/yJ8wfshUUmqnaSkkTJ1Ka+C1zYn+U6dA\nNYXgi54DUZ8X13eDwHydTYi/kbbgJK3qn8ozlFXyggHR7LddE4EdgrprQ7ye8LLY\nuQINZ+86arQV2TFtB1JD/P4Pt1vNsWd/CqjycteH6sOqUxGI9D1J1elY/ihAVRmK\nEatXk0iqqsBGr7hJpRZRM91nJJp6/pQdoZl5dByXzgpgkWRsdLYpbRK5E5eqCzVx\nKS2kMKRtd1K5hCgC4wRnZRZs9bYQjVP5SqQKfE8WtinF23XzERfwasm2YyFVN5+x\nXxA4QvVO3gK+tmg5Sy/6f+PLlvwdMIk//iQKYPkX+QKBgQDUgF+DQ/WXqz592DQi\nwD6TW89f8Yz0sXoUuII26NOsxECxtmpNsY8gvheIHlvUlrIH0nzAniRlh3PfeJKg\nZVL9RW7wjpj+NZMOx7XSF9qrSRZEDz7xy1/ceX/nUbmDWsa/Di1gY5/EqwGadzhy\nUqRkvCX8SbgMByP3aSa+XhDDOwKBgQDLwUJuF2EL0nl/XinhKJ6hVoYugvzgRuuX\n4uqobI9brAvgSHZvJojolyjmXy/+gfX9X5Ns93SsqtupVkMHL+ZHsV8p9oCi/0F6\nlH+L/z15gYrJhZbZM2vafv8juvEFS6/BbHeecsJ31Z5ZJCeWxQ1t3M7UjwWOI1Vo\np4j6NPM6mQKBgAPwiVTGqsPwEc2Fd5n5VG+o8RRHRyS2MZw2u3tHH72BOe3RgvED\nzLJ/s7H7Vhp/3LcWaOetRuF2/Gf1NUqx9jLp2Z+uFRoJZjuM6ksF1DD+vuHuIm2b\nJqDQw9VHB5hu02ZxXdf+oNSlkvcJJMvBynhvoIin2Tin3TvWADjhR5BHAoGABPJJ\nIZERuw6+AliP3bZ1u2b1VPW7G9q853AL0FDqXghcNXKs5V/jHPpmdMlEygHvrdn/\nIzsSqwpu0LqWX/tKtNzaeZNRZiOaPFaUjhqBLIz3iJLkqZs0+BXzLbPhHAbNWn2+\nnasdi3k1Iebdyyw3ej5NCx35vYygCy1eBuz4JqkCgYAJ+4jiSs7PMYGM2FRBkXjF\nA7X41wv/Z7MuKlyOot0Ui3CUwRSFth3czRR+OASlsA8OB3cEtEgWBk9m8HxWVIos\nrW+B/yaDFPAW+4S2WHlxUcSflkqTSvGxJ/SksR9RuxzK12GOjOgCe+G14tCcfCWv\nmwkCPsya9cceISx7zpRQMw==\n-----END PRIVATE KEY-----\n",
-    clientEmail: "firebase-adminsdk-y3p89@quomia.iam.gserviceaccount.com",
+const credentials: Credentials = {
+  projectId: serviceAccountKey.project_id,
+  clientEmail: serviceAccountKey.client_email,
+  privateKey: serviceAccountKey.private_key,
+};
+
+initializeApp({
+  credential: cert({
+    projectId: credentials.projectId,
+    clientEmail: credentials.clientEmail,
+    privateKey: credentials.privateKey
   })
 });
 
-const db = admin.firestore();
-const app = express();
+const db = getFirestore();
 
+const app = express();
 app.use(express.json());
 
-console.log("Current Firebase Project:", admin.app().options.projectId);
+const checkCategory = (category: Category): void => {
+  if (![Category.INTERACTIVE, Category.TEXT].includes(category)) {
+    throw new Error('Categoria non valida');
+  }
+};
 
-// Create Box
-app.post("/box", async (req, res) => {
+const checkType = (type: Type): void => {
+  if (![Type.FUTURE, Type.REWIND, Type.MESSAGE_IN_A_BOTTLE].includes(type)) {
+    throw new Error('Tipo non valido');
+  }
+};
+
+app.post("/box", async (req: Request, res: Response) => {
   try {
-    const { title, type, date, time, category } = req.body;
+    const { title, type, startDate, endDate, category, message, filePath, user } = req.body;
 
-    /*if (!title || !message) {
-          return res.status(400).json({ error: "Name and expiration are required" });
-        }*/
+    if (!title || !type || !startDate || !endDate || !category) {
+      return res.status(400).json({ error: "Campi obbligatori mancanti" });
+    }
+
+    // Validazione di categoria e tipo
+    checkCategory(category);
+    checkType(type);
 
     const box: Box = {
-      title: title,
-      type: type,
-      date: date,
-      time: time,
-      category: category,
+      title,
+      type,
+      startDate: new Date(startDate),
+      endDate: new Date(endDate),
+      category,
+      message: message ?? '',
+      filePath: filePath ?? '',
+      user: user ?? '',
+      createdAt: FieldValue.serverTimestamp(),
     };
 
     const docRef = await db.collection("boxes").add(box);
-    return res.status(201).json({ id: docRef.id, ...box });
-  } catch (error) {
-    console.error("Error creating box:", error);
-    return res.status(500).json({ error: "Internal Server Error" });
+    const createdBox = await docRef.get();
+
+    return res.status(201).json({ id: docRef.id, ...createdBox.data() });
+  } catch (error: any) {
+    console.error("Errore nella creazione della box:", error);
+    if (error.message === 'Categoria non valida' || error.message === 'Tipo non valido') {
+      return res.status(400).json({ error: error.message });
+    }
+    return res.status(500).json({ error: "Errore interno del server" });
   }
 });
 
-app.get("/box", async (req, res) => {});
+app.get("/box", async (req: Request, res: Response) => {
+  try {
+    const viralBoxes: Box[] = [];
+    const snapshot = await db.collection("boxes")
+      .where("type", "==", Type.MESSAGE_IN_A_BOTTLE)
+      .orderBy('createdAt', 'desc')
+      .get();
 
-exports.api = onRequest(app);
+    snapshot.forEach(doc => {
+      viralBoxes.push({ ...(doc.data() as Box) });
+    });
+
+    return res.status(200).json({ viralBoxes });
+  } catch (error) {
+    console.error("Errore nel recupero delle boxes:", error);
+    return res.status(500).json({ error: "Errore interno del server" });
+  }
+});
+
+export const api = onRequest({ region: 'europe-west3' }, app);
