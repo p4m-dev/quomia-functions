@@ -6,6 +6,7 @@ import { FieldValue } from "firebase-admin/firestore";
 import { collBoxes } from "./config";
 import express, { Request, Response } from 'express';
 import { generateAccessCode } from "./box-utils";
+import { Timer } from "./models/timer";
 
 const app = express();
 app.use(express.json());
@@ -91,7 +92,7 @@ app.get("/box", async (req: Request, res: Response) => {
   try {
     const boxes: Box[] = [];
     const snapshot = await collBoxes
-      .where("info.type", "==", 'message_in_a_bottle')
+      .where("info.type", "==", 'social')
       .orderBy('createdAt', 'desc')
       .get();
 
@@ -103,6 +104,24 @@ app.get("/box", async (req: Request, res: Response) => {
   } catch (error) {
     console.error("Errore nel recupero delle boxes:", error);
     return res.status(500).json({ error: "Errore interno del server" });
+  }
+});
+
+app.get("/timers", async (req: Request, res: Response) => {
+  try {
+    const boxes: Timer[] = [];
+    const snapshot = await collBoxes
+      .orderBy('createdAt', 'desc')
+      .get();
+
+    snapshot.forEach(doc => {
+      boxes.push({ ...(doc.data() as Timer) });
+    });
+
+    return res.status(200).json({ boxes });
+  } catch (error) {
+    console.error("Error while retrieving timers:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 });
 

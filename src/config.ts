@@ -19,8 +19,10 @@ initializeApp({
 
 const db = getFirestore();
 const collBoxes = db.collection('boxes');
+const collTimers = db.collection('timers');
 
 export {
     db,
-    collBoxes
+    collBoxes,
+    collTimers
 }
