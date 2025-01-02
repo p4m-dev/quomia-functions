@@ -1,12 +1,12 @@
 export enum Category {
   INTERACTIVE,
-  TEXT
+  TEXT,
 }
 
 export enum Type {
   FUTURE,
   REWIND,
-  MESSAGE_IN_A_BOTTLE
+  MESSAGE_IN_A_BOTTLE,
 }
 
 export interface Info {
@@ -36,8 +36,8 @@ export interface User {
 }
 
 export interface Box {
-  info: Info,
-  content: Content,
-  dates: Dates,
-  user: User
+  info: Info;
+  content: Content;
+  dates: Dates;
+  user: User;
 }

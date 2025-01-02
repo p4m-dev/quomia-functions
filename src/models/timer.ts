@@ -1,5 +1,5 @@
 export interface Timer {
-    username: String;
-    location: String;
-    avatar: String;
+  username: string;
+  location: string;
+  avatar: string;
 }

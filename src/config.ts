@@ -13,16 +13,12 @@ initializeApp({
   credential: cert({
     projectId: credentials.projectId,
     clientEmail: credentials.clientEmail,
-    privateKey: credentials.privateKey
-  })
+    privateKey: credentials.privateKey,
+  }),
 });
 
 const db = getFirestore();
-const collBoxes = db.collection('boxes');
-const collTimers = db.collection('timers');
+const collBoxes = db.collection("boxes");
+const collTimers = db.collection("timers");
 
-export {
-    db,
-    collBoxes,
-    collTimers
-}
+export { db, collBoxes, collTimers };
