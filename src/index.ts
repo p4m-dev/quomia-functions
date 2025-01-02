@@ -3,7 +3,7 @@ import { Box } from "./types";
 import { parseDate } from "./date-utils";
 import { checkBoxAlreadyPurchased, generateDeliveryDate } from "./services/box-services";
 import { FieldValue } from "firebase-admin/firestore";
-import { collBoxes } from "./config";
+import { collBoxes, collTimers } from "./config";
 import express, { Request, Response } from 'express';
 import { generateAccessCode } from "./box-utils";
 import { Timer } from "./models/timer";
@@ -109,16 +109,16 @@ app.get("/box", async (req: Request, res: Response) => {
 
 app.get("/timers", async (req: Request, res: Response) => {
   try {
-    const boxes: Timer[] = [];
-    const snapshot = await collBoxes
+    const timers: Timer[] = [];
+    const snapshot = await collTimers
       .orderBy('createdAt', 'desc')
       .get();
 
     snapshot.forEach(doc => {
-      boxes.push({ ...(doc.data() as Timer) });
+      timers.push({ ...(doc.data() as Timer) });
     });
 
-    return res.status(200).json({ boxes });
+    return res.status(200).json({ timers });
   } catch (error) {
     console.error("Error while retrieving timers:", error);
     return res.status(500).json({ error: "Internal server error" });
