@@ -1,15 +1,38 @@
 import { Router } from "express";
 import { collBoxes } from "../config";
 import { parseDate } from "../date-utils";
-import {
-  checkBoxAlreadyPurchased,
-  generateDeliveryDate,
-} from "../services/box-services";
+import { handleBoxRewind } from "../services/box-services";
 import { generateAccessCode } from "../box-utils";
 import { FieldValue } from "firebase-admin/firestore";
-import { Box } from "../types";
+import { Box } from "../models/types";
+import { boxRewindSchema } from "../models/schemas";
 
 const boxRouter = Router();
+
+// Rewind
+boxRouter.post("/rewind", async (req, res) => {
+  try {
+    const validatedBody = boxRewindSchema.parse(req.body);
+
+    const result = handleBoxRewind(validatedBody);
+
+    if (result == null) {
+      return res.status(400).json({
+        message: "Error",
+      });
+    }
+    return res.status(201).json({
+      message: "Rewind Box successfully created!",
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: error.message });
+  }
+});
+
+// Future
+
+// Social -> message in a bottle
 
 boxRouter.post("/", async (req, res) => {
   try {
@@ -80,7 +103,7 @@ boxRouter.post("/", async (req, res) => {
   }
 });
 
-boxRouter.get("/", async (req, res) => {
+boxRouter.get("/social", async (req, res) => {
   try {
     const boxes: Box[] = [];
     const snapshot = await collBoxes

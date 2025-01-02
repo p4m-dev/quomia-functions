@@ -1,40 +1,44 @@
-import { Timestamp } from "firebase-admin/firestore";
 import { collBoxes } from "../config";
-import { getDeliveryDate } from "../date-utils";
+import { mapBoxRewind } from "../mapper/box-mapper";
+import { Box, RewindSchema } from "../models/types";
+import { checkBoxAlreadyPurchased } from "../helper/box-helper";
 
-const checkBoxAlreadyPurchased = async (
-  queryStartDate: Date,
-  queryEndDate: Date
-) => {
-  const docs = await collBoxes
-    .where("dates.startDate", "<=", queryStartDate)
-    .where("dates.endDate", ">=", queryEndDate)
-    .get();
+const handleBoxRewind = async (rewindSchema: RewindSchema) => {
+  try {
+    const box: Box = mapBoxRewind(rewindSchema);
 
-  return !docs.empty;
-};
+    const alreadyPurchased = await checkBoxAlreadyPurchased(
+      box.dates.startDate,
+      box.dates.endDate
+    );
 
-const isDateAvailable = async (dateMoment: moment.Moment): Promise<boolean> => {
-  const dateTimestamp = Timestamp.fromDate(dateMoment.toDate());
-  const docs = await collBoxes
-    .where("dates.deliveryDate", "==", dateTimestamp)
-    .get();
-  return docs.empty;
-};
+    if (alreadyPurchased) {
+      throw new Error("Temporal slot already purchased!");
+    }
 
-const generateDeliveryDate = async (
-  startDate: string,
-  type: string
-): Promise<Date> => {
-  const deliveryDate = getDeliveryDate(startDate);
-  const isAvailable = await isDateAvailable(deliveryDate);
+    const docRef = await collBoxes.add(box);
+    const createdBox = await docRef.get();
 
-  if (type === "rewind" && isAvailable) {
-    return deliveryDate.toDate();
+    return createdBox;
+  } catch (error) {
+    console.error(error);
+    return null;
   }
-  throw new Error(
-    "Delivery date cannot be generated! Temporal slot not available!"
-  );
 };
 
-export { checkBoxAlreadyPurchased, generateDeliveryDate };
+export { handleBoxRewind };
+
+// const generateDeliveryDate = async (
+//   startDate: string,
+//   type: string
+// ): Promise<Date> => {
+//   const deliveryDate = getDeliveryDate(startDate);
+//   const isAvailable = await isDateAvailable(deliveryDate);
+
+//   if (type === "rewind" && isAvailable) {
+//     return deliveryDate.toDate();
+//   }
+//   throw new Error(
+//     "Delivery date cannot be generated! Temporal slot not available!"
+//   );
+// };

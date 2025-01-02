@@ -1,12 +1,15 @@
+import { z } from "zod";
+import { boxFutureSchema, boxRewindSchema, boxSocialSchema } from "./schemas";
+
 export enum Category {
-  INTERACTIVE,
-  TEXT,
+  INTERACTIVE = "interactive",
+  TEXT = "text",
 }
 
 export enum Type {
-  FUTURE,
-  REWIND,
-  MESSAGE_IN_A_BOTTLE,
+  FUTURE = "future",
+  REWIND = "rewind",
+  SOCIAL = "social",
 }
 
 export interface Info {
@@ -25,7 +28,8 @@ export interface Content {
 export interface Dates {
   startDate: Date;
   endDate: Date;
-  deliveryDate: Date;
+  deliveryDate?: Date;
+  futureDates?: Date[];
   createdAt?: FirebaseFirestore.FieldValue;
   updatedAt?: FirebaseFirestore.FieldValue;
 }
@@ -41,3 +45,11 @@ export interface Box {
   dates: Dates;
   user: User;
 }
+
+type RewindSchema = z.infer<typeof boxRewindSchema>;
+
+type FutureSchema = z.infer<typeof boxFutureSchema>;
+
+type SocialSchema = z.infer<typeof boxSocialSchema>;
+
+export { RewindSchema, FutureSchema, SocialSchema };
