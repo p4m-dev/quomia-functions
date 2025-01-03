@@ -1,6 +1,6 @@
 import { FieldValue } from "firebase-admin/firestore";
-import { generateAccessCode } from "../box-utils";
-import { parseDate } from "../date-utils";
+import { generateAccessCode } from "../utils/box-utils";
+import { parseDate } from "../utils/date-utils";
 import { Box, FutureSchema, RewindSchema, SocialSchema } from "../models/types";
 
 const mapBoxRewind = (rewindSchema: RewindSchema): Box => {

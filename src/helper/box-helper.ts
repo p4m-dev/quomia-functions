@@ -1,5 +1,5 @@
 import { Timestamp } from "firebase-admin/firestore";
-import { collBoxes } from "../config";
+import { collBoxes } from "../config/config";
 
 const checkBoxAlreadyPurchased = async (
   queryStartDate: Date,

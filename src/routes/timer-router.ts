@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { collTimers } from "../config";
+import { collTimers } from "../config/config";
 import { Timer } from "../models/timer";
 
 const timerRouter = Router();
