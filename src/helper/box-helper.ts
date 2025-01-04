@@ -1,4 +1,3 @@
-import { Timestamp } from "firebase-admin/firestore";
 import { collBoxes } from "../config/config";
 
 const checkBoxAlreadyPurchased = async (
@@ -13,12 +12,13 @@ const checkBoxAlreadyPurchased = async (
   return !docs.empty;
 };
 
-const isDateAvailable = async (dateMoment: moment.Moment): Promise<boolean> => {
-  const dateTimestamp = Timestamp.fromDate(dateMoment.toDate());
-  const docs = await collBoxes
-    .where("dates.deliveryDate", "==", dateTimestamp)
+const checkFutureDate = async (date: Date) => {
+  const snapshot = await collBoxes
+    .where("type", "==", "rewind")
+    .where("dates.futureDates", "array-contains", date)
     .get();
-  return docs.empty;
+
+  return !snapshot.empty;
 };
 
-export { checkBoxAlreadyPurchased };
+export { checkBoxAlreadyPurchased, checkFutureDate };

@@ -1,17 +1,11 @@
 import { Router } from "express";
-import { collTimers } from "../config/config";
-import { Timer } from "../models/timer";
+import { retrieveTimers } from "../services/timer-services";
 
 const timerRouter = Router();
 
 timerRouter.get("/", async (req, res) => {
   try {
-    const timers: Timer[] = [];
-    const snapshot = await collTimers.orderBy("createdAt", "desc").get();
-
-    snapshot.forEach((doc) => {
-      timers.push({ ...(doc.data() as Timer) });
-    });
+    const timers = await retrieveTimers();
 
     return res.status(200).json({ timers });
   } catch (error) {

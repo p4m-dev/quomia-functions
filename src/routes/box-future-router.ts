@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { handleBoxFuture, handleBoxRewind } from "../services/box-services";
+import { handleBoxFuture } from "../services/box-services";
 import { boxFutureSchema } from "../models/schemas";
 
 const boxFutureRouter = Router();

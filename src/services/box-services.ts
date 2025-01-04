@@ -1,19 +1,34 @@
 import { collBoxes } from "../config/config";
 import { mapBoxFuture, mapBoxRewind, mapBoxSocial } from "../mapper/box-mapper";
 import { Box, FutureSchema, RewindSchema, SocialSchema } from "../models/types";
-import { checkBoxAlreadyPurchased } from "../helper/box-helper";
+import {
+  checkBoxAlreadyPurchased,
+  checkFutureDate,
+} from "../helper/box-helper";
 
 const handleBoxRewind = async (rewindSchema: RewindSchema) => {
   try {
     const box: Box = mapBoxRewind(rewindSchema);
 
-    const alreadyPurchased = await checkBoxAlreadyPurchased(
+    const isAlreadyPurchased = await checkBoxAlreadyPurchased(
       box.dates.startDate,
       box.dates.endDate
     );
 
-    if (alreadyPurchased) {
+    if (isAlreadyPurchased) {
       throw new Error("Temporal slot already purchased!");
+    }
+
+    const futureDates = box.dates.futureDates;
+
+    if (futureDates) {
+      futureDates.forEach(async (date) => {
+        const isDateAlreadyTaken = await checkFutureDate(date);
+
+        if (isDateAlreadyTaken) {
+          throw new Error(`Future date ${date} not available!`);
+        }
+      });
     }
 
     const docRef = await collBoxes.add(box);
@@ -30,12 +45,12 @@ const handleBoxFuture = async (futureSchema: FutureSchema) => {
   try {
     const box: Box = mapBoxFuture(futureSchema);
 
-    const alreadyPurchased = await checkBoxAlreadyPurchased(
+    const isAlreadyPurchased = await checkBoxAlreadyPurchased(
       box.dates.startDate,
       box.dates.endDate
     );
 
-    if (alreadyPurchased) {
+    if (isAlreadyPurchased) {
       throw new Error("Temporal slot already purchased!");
     }
 
@@ -53,12 +68,12 @@ const handleBoxSocial = async (socialSchema: SocialSchema) => {
   try {
     const box: Box = mapBoxSocial(socialSchema);
 
-    const alreadyPurchased = await checkBoxAlreadyPurchased(
+    const isAlreadyPurchased = await checkBoxAlreadyPurchased(
       box.dates.startDate,
       box.dates.endDate
     );
 
-    if (alreadyPurchased) {
+    if (isAlreadyPurchased) {
       throw new Error("Temporal slot already purchased!");
     }
 
