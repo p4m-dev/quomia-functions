@@ -3,6 +3,7 @@ import { handleBoxSocial, retrieveSocialBoxes } from "../services/box-services";
 import { boxSocialSchema } from "../models/schemas";
 import { ZodError } from "zod";
 import { handleZodError } from "../utils/error-utils";
+import { BoxResponse } from "../models/types";
 
 const boxSocialRouter = Router();
 
@@ -32,7 +33,7 @@ boxSocialRouter.post("/", async (req, res) => {
 
 boxSocialRouter.get("/", async (req, res) => {
   try {
-    const boxes = await retrieveSocialBoxes();
+    const boxes: BoxResponse[] = await retrieveSocialBoxes();
 
     return res.status(200).json({ boxes });
   } catch (error) {

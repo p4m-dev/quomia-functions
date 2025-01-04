@@ -46,6 +46,13 @@ export interface Box {
   updatedAt?: FirebaseFirestore.FieldValue;
 }
 
+export interface BoxResponse {
+  info: Info;
+  content: Content;
+  dates: Dates;
+  user: User;
+}
+
 type RewindSchema = z.infer<typeof boxRewindSchema>;
 
 type FutureSchema = z.infer<typeof boxFutureSchema>;

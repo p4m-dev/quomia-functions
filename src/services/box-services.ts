@@ -1,6 +1,17 @@
 import { collBoxes } from "../config/config";
-import { mapBoxFuture, mapBoxRewind, mapBoxSocial } from "../mapper/box-mapper";
-import { Box, FutureSchema, RewindSchema, SocialSchema } from "../models/types";
+import {
+  mapBoxFromDB,
+  mapBoxFuture,
+  mapBoxRewind,
+  mapBoxSocial,
+} from "../mapper/box-mapper";
+import {
+  Box,
+  BoxResponse,
+  FutureSchema,
+  RewindSchema,
+  SocialSchema,
+} from "../models/types";
 import {
   checkBoxAlreadyPurchased,
   checkFutureDate,
@@ -87,16 +98,18 @@ const handleBoxSocial = async (socialSchema: SocialSchema) => {
   }
 };
 
-const retrieveSocialBoxes = async () => {
+const retrieveSocialBoxes = async (): Promise<BoxResponse[]> => {
   try {
-    const boxes: Box[] = [];
+    const boxes: BoxResponse[] = [];
     const snapshot = await collBoxes
       .where("info.type", "==", "social")
       .orderBy("createdAt", "desc")
       .get();
 
     snapshot.forEach((doc) => {
-      boxes.push({ ...(doc.data() as Box) });
+      const box = { ...(doc.data() as Box) };
+      const boxResponse = mapBoxFromDB(box);
+      boxes.push(boxResponse);
     });
 
     return boxes;
