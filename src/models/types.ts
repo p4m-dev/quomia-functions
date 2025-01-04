@@ -30,8 +30,6 @@ export interface Dates {
   endDate: Date;
   deliveryDate?: Date;
   futureDates?: Date[];
-  createdAt?: FirebaseFirestore.FieldValue;
-  updatedAt?: FirebaseFirestore.FieldValue;
 }
 
 export interface User {
@@ -44,6 +42,8 @@ export interface Box {
   content: Content;
   dates: Dates;
   user: User;
+  createdAt?: FirebaseFirestore.FieldValue;
+  updatedAt?: FirebaseFirestore.FieldValue;
 }
 
 type RewindSchema = z.infer<typeof boxRewindSchema>;

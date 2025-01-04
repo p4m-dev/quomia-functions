@@ -1,6 +1,8 @@
 import { Router } from "express";
 import { handleBoxFuture } from "../services/box-services";
 import { boxFutureSchema } from "../models/schemas";
+import { ZodError } from "zod";
+import { handleZodError } from "../utils/error-utils";
 
 const boxFutureRouter = Router();
 
@@ -20,6 +22,10 @@ boxFutureRouter.post("/", async (req, res) => {
     });
   } catch (error: any) {
     console.error(error);
+
+    if (error instanceof ZodError) {
+      return handleZodError(res, error);
+    }
     return res.status(500).json({ error: error.message });
   }
 });

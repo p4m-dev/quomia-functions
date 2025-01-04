@@ -15,30 +15,45 @@ const receiverSchema = z.string();
 
 const rewindDatesSchema = z.object({
   dates: z.object({
-    range: z.object({
-      start: z.string(),
-      end: z.string(),
-    }),
+    range: z
+      .object({
+        start: z.string(),
+        end: z.string(),
+      })
+      .refine((range) => new Date(range.end) > new Date(range.start), {
+        message: "End date must be after start date",
+        path: ["end"],
+      }),
     future: z.array(z.string()),
   }),
 });
 
 const futureDatesSchema = z.object({
   dates: z.object({
-    range: z.object({
-      start: z.string(),
-      end: z.string(),
-    }),
+    range: z
+      .object({
+        start: z.string(),
+        end: z.string(),
+      })
+      .refine((range) => new Date(range.end) > new Date(range.start), {
+        message: "End date must be after start date",
+        path: ["end"],
+      }),
     deliveryDate: z.string(),
   }),
 });
 
 const socialDatesSchema = z.object({
   dates: z.object({
-    range: z.object({
-      start: z.string(),
-      end: z.string(),
-    }),
+    range: z
+      .object({
+        start: z.string(),
+        end: z.string(),
+      })
+      .refine((range) => new Date(range.end) > new Date(range.start), {
+        message: "End date must be after start date",
+        path: ["end"],
+      }),
   }),
 });
 

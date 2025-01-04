@@ -35,9 +35,9 @@ const handleBoxRewind = async (rewindSchema: RewindSchema) => {
     const createdBox = await docRef.get();
 
     return createdBox;
-  } catch (error) {
+  } catch (error: any) {
     console.error(error);
-    return null;
+    throw new Error(error.message);
   }
 };
 

@@ -1,12 +1,14 @@
 import { Router } from "express";
 import { handleBoxSocial, retrieveSocialBoxes } from "../services/box-services";
-import { boxRewindSchema } from "../models/schemas";
+import { boxSocialSchema } from "../models/schemas";
+import { ZodError } from "zod";
+import { handleZodError } from "../utils/error-utils";
 
 const boxSocialRouter = Router();
 
-boxSocialRouter.post("/rewind", async (req, res) => {
+boxSocialRouter.post("/", async (req, res) => {
   try {
-    const validatedBody = boxRewindSchema.parse(req.body);
+    const validatedBody = boxSocialSchema.parse(req.body);
 
     const result = handleBoxSocial(validatedBody);
 
@@ -20,11 +22,15 @@ boxSocialRouter.post("/rewind", async (req, res) => {
     });
   } catch (error: any) {
     console.error(error);
+
+    if (error instanceof ZodError) {
+      return handleZodError(res, error);
+    }
     return res.status(500).json({ error: error.message });
   }
 });
 
-boxSocialRouter.get("/social", async (req, res) => {
+boxSocialRouter.get("/", async (req, res) => {
   try {
     const boxes = await retrieveSocialBoxes();
 

@@ -20,13 +20,13 @@ const mapBoxRewind = (rewindSchema: RewindSchema): Box => {
       startDate: parseDate(rewindSchema.dates.range.start),
       endDate: parseDate(rewindSchema.dates.range.end),
       futureDates: rewindSchema.dates.future.map((date) => parseDate(date)),
-      createdAt: FieldValue.serverTimestamp(),
-      updatedAt: FieldValue.serverTimestamp(),
     },
     user: {
       sender: rewindSchema.sender,
       receiver: rewindSchema.receiver ?? "",
     },
+    createdAt: FieldValue.serverTimestamp(),
+    updatedAt: FieldValue.serverTimestamp(),
   };
 };
 
@@ -47,13 +47,13 @@ const mapBoxFuture = (futureSchema: FutureSchema): Box => {
       startDate: parseDate(futureSchema.dates.range.start),
       endDate: parseDate(futureSchema.dates.range.end),
       deliveryDate: parseDate(futureSchema.dates.deliveryDate),
-      createdAt: FieldValue.serverTimestamp(),
-      updatedAt: FieldValue.serverTimestamp(),
     },
     user: {
       sender: futureSchema.sender,
       receiver: futureSchema.receiver ?? "",
     },
+    createdAt: FieldValue.serverTimestamp(),
+    updatedAt: FieldValue.serverTimestamp(),
   };
 };
 
@@ -73,12 +73,12 @@ const mapBoxSocial = (socialSchema: SocialSchema): Box => {
     dates: {
       startDate: parseDate(socialSchema.dates.range.start),
       endDate: parseDate(socialSchema.dates.range.end),
-      createdAt: FieldValue.serverTimestamp(),
-      updatedAt: FieldValue.serverTimestamp(),
     },
     user: {
       sender: socialSchema.sender,
     },
+    createdAt: FieldValue.serverTimestamp(),
+    updatedAt: FieldValue.serverTimestamp(),
   };
 };
 

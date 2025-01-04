@@ -1,10 +1,12 @@
 import { Router } from "express";
 import { handleBoxRewind } from "../services/box-services";
 import { boxRewindSchema } from "../models/schemas";
+import { ZodError } from "zod";
+import { handleZodError } from "../utils/error-utils";
 
 const boxRewindRouter = Router();
 
-boxRewindRouter.post("/rewind", async (req, res) => {
+boxRewindRouter.post("/", async (req, res) => {
   try {
     const validatedBody = boxRewindSchema.parse(req.body);
 
@@ -20,6 +22,10 @@ boxRewindRouter.post("/rewind", async (req, res) => {
     });
   } catch (error: any) {
     console.error(error);
+
+    if (error instanceof ZodError) {
+      return handleZodError(res, error);
+    }
     return res.status(500).json({ error: error.message });
   }
 });
