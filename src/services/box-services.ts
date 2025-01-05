@@ -16,10 +16,15 @@ import {
   checkBoxAlreadyPurchased,
   checkFutureDate,
 } from "../helper/box-helper";
+import { handleFileSave } from "../helper/storage-helper";
 
 const handleBoxRewind = async (rewindSchema: RewindSchema) => {
   try {
     const box: Box = mapBoxRewind(rewindSchema);
+
+    if (box.content.file) {
+      handleFileSave(box.content.file, box.user.sender);
+    }
 
     const isAlreadyPurchased = await checkBoxAlreadyPurchased(
       box.dates.startDate,

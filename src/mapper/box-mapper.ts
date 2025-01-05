@@ -7,7 +7,24 @@ import {
   RewindSchema,
   SocialSchema,
   BoxResponse,
+  FileSchema,
+  Content,
 } from "../models/types";
+
+const mapContent = (fileSchema: FileSchema, message?: string): Content => {
+  if (fileSchema && message) {
+    return {
+      message: message,
+      file: {
+        name: fileSchema.name,
+        content: Buffer.from(new Uint8Array(fileSchema.content)),
+      },
+    };
+  }
+  return {
+    message: message ?? "",
+  };
+};
 
 const mapBoxRewind = (rewindSchema: RewindSchema): Box => {
   return {
@@ -18,10 +35,7 @@ const mapBoxRewind = (rewindSchema: RewindSchema): Box => {
       isAnonymous: rewindSchema.isAnonymous ?? false,
       accessCode: generateAccessCode(),
     },
-    content: {
-      message: rewindSchema.message ?? "",
-      filePath: rewindSchema.filePath ?? "",
-    },
+    content: mapContent(rewindSchema.file, rewindSchema.message),
     dates: {
       startDate: parseDate(rewindSchema.dates.range.start),
       endDate: parseDate(rewindSchema.dates.range.end),
@@ -45,10 +59,7 @@ const mapBoxFuture = (futureSchema: FutureSchema): Box => {
       isAnonymous: futureSchema.isAnonymous ?? false,
       accessCode: generateAccessCode(),
     },
-    content: {
-      message: futureSchema.message ?? "",
-      filePath: futureSchema.filePath ?? "",
-    },
+    content: mapContent(futureSchema.file, futureSchema.message),
     dates: {
       startDate: parseDate(futureSchema.dates.range.start),
       endDate: parseDate(futureSchema.dates.range.end),
@@ -72,10 +83,7 @@ const mapBoxSocial = (socialSchema: SocialSchema): Box => {
       isAnonymous: socialSchema.isAnonymous ?? false,
       accessCode: generateAccessCode(),
     },
-    content: {
-      message: socialSchema.message ?? "",
-      filePath: socialSchema.filePath ?? "",
-    },
+    content: mapContent(socialSchema.file, socialSchema.message),
     dates: {
       startDate: parseDate(socialSchema.dates.range.start),
       endDate: parseDate(socialSchema.dates.range.end),
@@ -99,7 +107,7 @@ const mapBoxFromDB = (box: Box): BoxResponse => {
     },
     content: {
       message: box.content.message,
-      filePath: box.content.filePath,
+      file: box.content.file,
     },
     dates: {
       startDate: box.dates.startDate,

@@ -1,5 +1,10 @@
 import { z } from "zod";
-import { boxFutureSchema, boxRewindSchema, boxSocialSchema } from "./schemas";
+import {
+  boxFutureSchema,
+  boxRewindSchema,
+  boxSocialSchema,
+  fileSchema,
+} from "./schemas";
 
 export enum Category {
   INTERACTIVE = "interactive",
@@ -12,6 +17,13 @@ export enum Type {
   SOCIAL = "social",
 }
 
+export enum ContentType {
+  JPG = "image",
+  PNG = "image",
+  WAV = "audio",
+  MP4 = "video",
+}
+
 export interface Info {
   title: string;
   type: Type;
@@ -20,9 +32,14 @@ export interface Info {
   accessCode: string;
 }
 
+export interface File {
+  name: string;
+  content: Buffer;
+}
+
 export interface Content {
-  message?: string;
-  filePath?: string;
+  message: string;
+  file?: File;
 }
 
 export interface Dates {
@@ -59,4 +76,6 @@ type FutureSchema = z.infer<typeof boxFutureSchema>;
 
 type SocialSchema = z.infer<typeof boxSocialSchema>;
 
-export { RewindSchema, FutureSchema, SocialSchema };
+type FileSchema = z.infer<typeof fileSchema>;
+
+export { RewindSchema, FutureSchema, SocialSchema, FileSchema };
