@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { Category, Type } from "./types";
+import moment from "moment";
 
 const byteSchema = z.number().int().min(0).max(255);
 
@@ -31,10 +32,21 @@ const rewindDatesSchema = z.object({
         start: z.string(),
         end: z.string(),
       })
-      .refine((range) => new Date(range.end) > new Date(range.start), {
-        message: "End date must be after start date",
-        path: ["end"],
-      }),
+      .refine(
+        (range) => {
+          const startDate = moment(range.start, "DD/MM/YYYY HH:mm", true);
+          const endDate = moment(range.end, "DD/MM/YYYY HH:mm", true);
+          return (
+            startDate.isValid() &&
+            endDate.isValid() &&
+            endDate.isAfter(startDate)
+          );
+        },
+        {
+          message: "End date must be after start date",
+          path: ["end"],
+        }
+      ),
     future: z.array(z.string()),
   }),
 });
