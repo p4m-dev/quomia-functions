@@ -1,19 +1,42 @@
 import { bucket } from "../config/config";
 import { ContentType, File } from "../models/types";
 
-export const handleFileSave = async (fileInput: File, sender: string) => {
+export const saveAndRetrieveFileUrl = async (
+  fileInput: File,
+  sender: string
+) => {
   const contentType = retrieveContentType(fileInput.name);
 
-  if (contentType != null) {
+  if (contentType != null && fileInput.content) {
     const filePath = buildFilePath(fileInput.name, contentType, sender);
 
     const file = bucket.file(filePath);
 
-    await file.save(fileInput.content, {
-      metadata: { contentType: contentType },
-    });
+    const buffer = Buffer.from(fileInput.content, "base64");
+
+    try {
+      await file.save(buffer, {
+        metadata: { contentType: contentType },
+      });
+
+      //const publicUrl = await getSignedUrl(file);
+
+      return "publicUrl";
+    } catch (error) {
+      console.error(error);
+      return "error.message";
+    }
   }
+  return "";
 };
+
+// const getSignedUrl = async (file: File) => {
+//   const publicUrl = await file.getSignedUrl({
+//     action: "read",
+//     expires: Date.now() + 60 * 60 * 1000,
+//   });
+//   return publicUrl;
+// };
 
 const retrieveContentType = (fileName: string) => {
   const extension = getFileExtension(fileName);

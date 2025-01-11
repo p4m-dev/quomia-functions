@@ -6,23 +6,24 @@ import {
   FutureSchema,
   RewindSchema,
   SocialSchema,
-  BoxResponse,
   FileSchema,
   Content,
 } from "../models/types";
 
 const mapContent = (fileSchema: FileSchema, message?: string): Content => {
-  if (fileSchema && message) {
+  const localMessage = message ?? "";
+
+  if (fileSchema) {
     return {
-      message: message,
+      message: localMessage,
       file: {
         name: fileSchema.name,
-        content: Buffer.from(new Uint8Array(fileSchema.content)),
+        content: fileSchema.content,
       },
     };
   }
   return {
-    message: message ?? "",
+    message: localMessage,
   };
 };
 
@@ -96,30 +97,4 @@ const mapBoxSocial = (socialSchema: SocialSchema): Box => {
   };
 };
 
-const mapBoxFromDB = (box: Box): BoxResponse => {
-  return {
-    info: {
-      title: box.info.title,
-      type: box.info.type,
-      category: box.info.category,
-      isAnonymous: box.info.isAnonymous,
-      accessCode: box.info.accessCode,
-    },
-    content: {
-      message: box.content.message,
-      file: box.content.file,
-    },
-    dates: {
-      startDate: box.dates.startDate,
-      endDate: box.dates.endDate,
-      deliveryDate: box.dates.deliveryDate,
-      futureDates: box.dates.futureDates,
-    },
-    user: {
-      sender: box.user.sender,
-      receiver: box.user.receiver,
-    },
-  };
-};
-
-export { mapBoxRewind, mapBoxFuture, mapBoxSocial, mapBoxFromDB };
+export { mapBoxRewind, mapBoxFuture, mapBoxSocial };

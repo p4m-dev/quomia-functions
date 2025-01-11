@@ -1,27 +1,28 @@
 import { z } from "zod";
 import { Category, Type } from "./types";
-import moment from "moment";
-
-const byteSchema = z.number().int().min(0).max(255);
-
-const uint8ArraySchema = z.array(byteSchema);
+import { parseMomentDate } from "../utils/date-utils";
 
 export const fileSchema = z
   .object({
     name: z.string(),
-    content: uint8ArraySchema,
+    content: z.string().base64(),
   })
   .optional();
 
-const baseBoxSchema = z.object({
-  sender: z.string().min(1, "Sender is required"),
-  title: z.string().min(1, "Title is required"),
-  type: z.enum([Type.FUTURE, Type.REWIND, Type.SOCIAL]),
-  category: z.enum([Category.INTERACTIVE, Category.TEXT]),
-  message: z.string().optional(),
-  file: fileSchema,
-  isAnonymous: z.boolean().optional(),
-});
+const baseBoxSchema = z
+  .object({
+    sender: z.string().min(1, "Sender is required"),
+    title: z.string().min(1, "Title is required"),
+    type: z.enum([Type.FUTURE, Type.REWIND, Type.SOCIAL]),
+    category: z.enum([Category.INTERACTIVE, Category.TEXT]),
+    message: z.string().optional(),
+    file: fileSchema,
+    isAnonymous: z.boolean().optional(),
+  })
+  .refine((data) => !(data.message && data.file), {
+    message: "Either message or file can be present, not both",
+    path: ["message", "file"],
+  });
 
 const receiverSchema = z.string();
 
@@ -34,8 +35,8 @@ const rewindDatesSchema = z.object({
       })
       .refine(
         (range) => {
-          const startDate = moment(range.start, "DD/MM/YYYY HH:mm", true);
-          const endDate = moment(range.end, "DD/MM/YYYY HH:mm", true);
+          const startDate = parseMomentDate(range.start);
+          const endDate = parseMomentDate(range.end);
           return (
             startDate.isValid() &&
             endDate.isValid() &&
@@ -80,14 +81,14 @@ const socialDatesSchema = z.object({
   }),
 });
 
-const boxRewindSchema = baseBoxSchema.merge(
+const boxRewindSchema = baseBoxSchema.and(
   rewindDatesSchema.merge(z.object({ receiver: receiverSchema }))
 );
 
-const boxFutureSchema = baseBoxSchema.merge(
+const boxFutureSchema = baseBoxSchema.and(
   futureDatesSchema.merge(z.object({ receiver: receiverSchema }))
 );
 
-const boxSocialSchema = baseBoxSchema.merge(socialDatesSchema);
+const boxSocialSchema = baseBoxSchema.and(socialDatesSchema);
 
 export { boxRewindSchema, boxFutureSchema, boxSocialSchema };

@@ -34,7 +34,7 @@ export interface Info {
 
 export interface File {
   name: string;
-  content: Buffer;
+  content?: string;
 }
 
 export interface Content {

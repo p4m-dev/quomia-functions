@@ -1,12 +1,8 @@
 import { collBoxes } from "../config/config";
-import {
-  mapBoxFromDB,
-  mapBoxFuture,
-  mapBoxRewind,
-  mapBoxSocial,
-} from "../mapper/box-mapper";
+import { mapBoxFuture, mapBoxRewind, mapBoxSocial } from "../mapper/box-mapper";
 import {
   Box,
+  Content,
   BoxResponse,
   FutureSchema,
   RewindSchema,
@@ -16,15 +12,30 @@ import {
   checkBoxAlreadyPurchased,
   checkFutureDate,
 } from "../helper/box-helper";
-import { handleFileSave } from "../helper/storage-helper";
+import { saveAndRetrieveFileUrl } from "../helper/storage-helper";
+import { boxConverter } from "../helper/box-converter";
+
+const editContentBasedOnFileCheck = (
+  content: Content,
+  sender: string
+): Content => {
+  // Only if file has been selected in input!
+  if (content.file) {
+    saveAndRetrieveFileUrl(content.file, sender);
+
+    // Blank this field in order to not use too much data on Firestore
+    content.file.content = undefined;
+  }
+  return content;
+};
 
 const handleBoxRewind = async (rewindSchema: RewindSchema) => {
   try {
     const box: Box = mapBoxRewind(rewindSchema);
 
-    if (box.content.file) {
-      handleFileSave(box.content.file, box.user.sender);
-    }
+    const content = editContentBasedOnFileCheck(box.content, box.user.sender);
+
+    box.content = content;
 
     const isAlreadyPurchased = await checkBoxAlreadyPurchased(
       box.dates.startDate,
@@ -109,12 +120,12 @@ const retrieveSocialBoxes = async (): Promise<BoxResponse[]> => {
     const snapshot = await collBoxes
       .where("info.type", "==", "social")
       .orderBy("createdAt", "desc")
+      .withConverter(boxConverter)
       .get();
 
     snapshot.forEach((doc) => {
       const box = { ...(doc.data() as Box) };
-      const boxResponse = mapBoxFromDB(box);
-      boxes.push(boxResponse);
+      boxes.push(box);
     });
 
     return boxes;
