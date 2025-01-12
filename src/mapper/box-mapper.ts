@@ -19,6 +19,7 @@ const mapContent = (fileSchema: FileSchema, message?: string): Content => {
       file: {
         name: fileSchema.name,
         content: fileSchema.content,
+        fileType: fileSchema.fileType,
       },
     };
   }
@@ -45,6 +46,7 @@ const mapBoxRewind = (rewindSchema: RewindSchema): Box => {
     user: {
       sender: rewindSchema.sender,
       receiver: rewindSchema.receiver ?? "",
+      location: "Sciacca, Italia",
     },
     createdAt: FieldValue.serverTimestamp(),
     updatedAt: FieldValue.serverTimestamp(),
@@ -69,6 +71,7 @@ const mapBoxFuture = (futureSchema: FutureSchema): Box => {
     user: {
       sender: futureSchema.sender,
       receiver: futureSchema.receiver ?? "",
+      location: "Sciacca, Italia",
     },
     createdAt: FieldValue.serverTimestamp(),
     updatedAt: FieldValue.serverTimestamp(),
@@ -83,6 +86,11 @@ const mapBoxSocial = (socialSchema: SocialSchema): Box => {
       category: socialSchema.category,
       isAnonymous: socialSchema.isAnonymous ?? false,
       accessCode: generateAccessCode(),
+      likes: 0,
+      comments: {
+        totalOfComments: 0,
+        timerComments: [],
+      },
     },
     content: mapContent(socialSchema.file, socialSchema.message),
     dates: {
@@ -91,6 +99,7 @@ const mapBoxSocial = (socialSchema: SocialSchema): Box => {
     },
     user: {
       sender: socialSchema.sender,
+      location: "Sciacca, Italia",
     },
     createdAt: FieldValue.serverTimestamp(),
     updatedAt: FieldValue.serverTimestamp(),

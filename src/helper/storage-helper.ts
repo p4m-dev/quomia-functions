@@ -19,8 +19,6 @@ export const saveAndRetrieveFileUrl = async (
         metadata: { contentType: contentType },
       });
 
-      //const publicUrl = await getSignedUrl(file);
-
       return "publicUrl";
     } catch (error) {
       console.error(error);

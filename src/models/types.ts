@@ -24,17 +24,38 @@ export enum ContentType {
   MP4 = "video",
 }
 
+export enum FileType {
+  IMAGE = "image",
+  AUDIO = "audio",
+  VIDEO = "video",
+  TEXT = "text",
+}
+
+export interface TimerComment {
+  username: string;
+  message: string;
+  createdAt: Date;
+}
+
+export interface Comments {
+  totalOfComments: number;
+  timerComments: TimerComment[];
+}
+
 export interface Info {
   title: string;
   type: Type;
   category: Category;
   isAnonymous?: boolean;
   accessCode: string;
+  likes?: number;
+  comments?: Comments;
 }
 
 export interface File {
   name: string;
   content?: string;
+  fileType: FileType;
 }
 
 export interface Content {
@@ -52,6 +73,7 @@ export interface Dates {
 export interface User {
   sender: string;
   receiver?: string;
+  location: string;
 }
 
 export interface Box {

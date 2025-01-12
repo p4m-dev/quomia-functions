@@ -124,7 +124,7 @@ const retrieveSocialBoxes = async (): Promise<BoxResponse[]> => {
       .get();
 
     snapshot.forEach((doc) => {
-      const box = { ...(doc.data() as Box) };
+      const box = { ...(doc.data() as BoxResponse) };
       boxes.push(box);
     });
 

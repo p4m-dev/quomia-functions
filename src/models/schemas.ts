@@ -1,11 +1,17 @@
 import { z } from "zod";
-import { Category, Type } from "./types";
+import { Category, FileType, Type } from "./types";
 import { parseMomentDate } from "../utils/date-utils";
 
 export const fileSchema = z
   .object({
     name: z.string(),
     content: z.string().base64(),
+    fileType: z.enum([
+      FileType.IMAGE,
+      FileType.VIDEO,
+      FileType.AUDIO,
+      FileType.TEXT,
+    ]),
   })
   .optional();
 

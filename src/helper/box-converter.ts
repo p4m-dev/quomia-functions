@@ -1,5 +1,5 @@
 import { FirestoreDataConverter } from "firebase-admin/firestore";
-import { Box } from "../models/types";
+import { Box, BoxResponse } from "../models/types";
 import { formatDBDate } from "../utils/date-utils";
 
 export const boxConverter: FirestoreDataConverter<Box> = {
@@ -18,7 +18,7 @@ export const boxConverter: FirestoreDataConverter<Box> = {
         endDate: formatDBDate(data.dates.endDate),
         deliveryDate: formatDBDate(data.dates.deliveryDate),
       },
-    } as Box;
+    } as BoxResponse;
     console.log(box);
     return box;
   },
