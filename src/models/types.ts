@@ -52,15 +52,10 @@ export interface Info {
   comments?: Comments;
 }
 
-export interface File {
-  name: string;
-  content?: string;
-  fileType: FileType;
-}
-
 export interface Content {
-  message: string;
-  file?: File;
+  message?: string;
+  fileType?: FileType;
+  filePath?: string;
 }
 
 export interface Dates {
@@ -90,6 +85,12 @@ export interface BoxResponse {
   content: Content;
   dates: Dates;
   user: User;
+}
+
+export interface FileHelper {
+  name: string;
+  content: string;
+  fileType: FileType;
 }
 
 type RewindSchema = z.infer<typeof boxRewindSchema>;

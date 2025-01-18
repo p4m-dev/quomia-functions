@@ -16,11 +16,8 @@ const mapContent = (fileSchema: FileSchema, message?: string): Content => {
   if (fileSchema) {
     return {
       message: localMessage,
-      file: {
-        name: fileSchema.name,
-        content: fileSchema.content,
-        fileType: fileSchema.fileType,
-      },
+      fileType: fileSchema.fileType,
+      filePath: "",
     };
   }
   return {

@@ -1,8 +1,9 @@
+import { getDownloadURL } from "firebase-admin/storage";
 import { bucket } from "../config/config";
-import { ContentType, File } from "../models/types";
+import { ContentType, FileHelper } from "../models/types";
 
 export const saveAndRetrieveFileUrl = async (
-  fileInput: File,
+  fileInput: FileHelper,
   sender: string
 ) => {
   const contentType = retrieveContentType(fileInput.name);
@@ -16,25 +17,21 @@ export const saveAndRetrieveFileUrl = async (
 
     try {
       await file.save(buffer, {
-        metadata: { contentType: contentType },
+        metadata: {
+          contentType: contentType,
+        },
       });
 
-      return "publicUrl";
+      const url = await getDownloadURL(file);
+
+      return url;
     } catch (error) {
       console.error(error);
-      return "error.message";
+      return error;
     }
   }
   return "";
 };
-
-// const getSignedUrl = async (file: File) => {
-//   const publicUrl = await file.getSignedUrl({
-//     action: "read",
-//     expires: Date.now() + 60 * 60 * 1000,
-//   });
-//   return publicUrl;
-// };
 
 const retrieveContentType = (fileName: string) => {
   const extension = getFileExtension(fileName);

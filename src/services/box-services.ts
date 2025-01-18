@@ -2,7 +2,7 @@ import { collBoxes } from "../config/config";
 import { mapBoxFuture, mapBoxRewind, mapBoxSocial } from "../mapper/box-mapper";
 import {
   Box,
-  Content,
+  FileHelper,
   BoxResponse,
   FutureSchema,
   RewindSchema,
@@ -14,29 +14,13 @@ import {
 } from "../helper/box-helper";
 import { saveAndRetrieveFileUrl } from "../helper/storage-helper";
 import { boxConverter } from "../helper/box-converter";
-
-const editContentBasedOnFileCheck = (
-  content: Content,
-  sender: string
-): Content => {
-  // Only if file has been selected in input!
-  if (content.file) {
-    saveAndRetrieveFileUrl(content.file, sender);
-
-    // Blank this field in order to not use too much data on Firestore
-    content.file.content = undefined;
-  }
-  return content;
-};
+import { mapFileHelper } from "../mapper/file-mapper";
 
 const handleBoxRewind = async (rewindSchema: RewindSchema) => {
   try {
     const box: Box = mapBoxRewind(rewindSchema);
 
-    const content = editContentBasedOnFileCheck(box.content, box.user.sender);
-
-    box.content = content;
-
+    // Check if temporal slot is free
     const isAlreadyPurchased = await checkBoxAlreadyPurchased(
       box.dates.startDate,
       box.dates.endDate
@@ -44,6 +28,13 @@ const handleBoxRewind = async (rewindSchema: RewindSchema) => {
 
     if (isAlreadyPurchased) {
       throw new Error("Temporal slot already purchased!");
+    }
+
+    // Only if file has been selected in input!
+    if (rewindSchema.file) {
+      const fileHelper: FileHelper = mapFileHelper(rewindSchema.file);
+
+      await saveAndRetrieveFileUrl(fileHelper, box.user.sender);
     }
 
     const futureDates = box.dates.futureDates;
