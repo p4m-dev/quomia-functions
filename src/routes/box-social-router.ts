@@ -10,7 +10,7 @@ boxSocialRouter.post("/", async (req, res) => {
   try {
     const validatedBody = boxSocialSchema.parse(req.body);
 
-    const result = handleBoxSocial(validatedBody);
+    const result = await handleBoxSocial(validatedBody);
 
     return res.status(201).json(result);
   } catch (error: any) {

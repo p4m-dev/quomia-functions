@@ -9,7 +9,7 @@ boxFutureRouter.post("/", async (req, res) => {
   try {
     const validatedBody = boxFutureSchema.parse(req.body);
 
-    const result = handleBoxFuture(validatedBody);
+    const result = await handleBoxFuture(validatedBody);
 
     return res.status(201).json(result);
   } catch (error: any) {
