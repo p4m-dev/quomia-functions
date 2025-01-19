@@ -1,8 +1,7 @@
 import { Router } from "express";
 import { handleBoxSocial, retrieveSocialBoxes } from "../services/box-services";
 import { boxSocialSchema } from "../models/schemas";
-import { ZodError } from "zod";
-import { handleZodError } from "../utils/error-utils";
+import { handleApiErrors } from "../utils/error-utils";
 import { BoxResponse } from "../models/types";
 
 const boxSocialRouter = Router();
@@ -13,21 +12,10 @@ boxSocialRouter.post("/", async (req, res) => {
 
     const result = handleBoxSocial(validatedBody);
 
-    if (result == null) {
-      return res.status(400).json({
-        message: "Error",
-      });
-    }
-    return res.status(201).json({
-      message: "Rewind Box successfully created!",
-    });
+    return res.status(201).json(result);
   } catch (error: any) {
     console.error(error);
-
-    if (error instanceof ZodError) {
-      return handleZodError(res, error);
-    }
-    return res.status(500).json({ error: error.message });
+    return handleApiErrors(res, error);
   }
 });
 

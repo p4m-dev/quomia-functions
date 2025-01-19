@@ -5,7 +5,7 @@ import { ContentType, FileHelper } from "../models/types";
 export const saveAndRetrieveFileUrl = async (
   fileInput: FileHelper,
   sender: string
-) => {
+): Promise<string> => {
   const contentType = retrieveContentType(fileInput.name);
 
   if (contentType != null && fileInput.content) {
@@ -27,7 +27,7 @@ export const saveAndRetrieveFileUrl = async (
       return url;
     } catch (error) {
       console.error(error);
-      return error;
+      return "";
     }
   }
   return "";
