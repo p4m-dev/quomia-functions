@@ -65,10 +65,21 @@ const futureDatesSchema = z.object({
         start: z.string(),
         end: z.string(),
       })
-      .refine((range) => new Date(range.end) > new Date(range.start), {
-        message: "End date must be after start date",
-        path: ["end"],
-      }),
+      .refine(
+        (range) => {
+          const startDate = parseMomentDate(range.start);
+          const endDate = parseMomentDate(range.end);
+          return (
+            startDate.isValid() &&
+            endDate.isValid() &&
+            endDate.isAfter(startDate)
+          );
+        },
+        {
+          message: "End date must be after start date",
+          path: ["end"],
+        }
+      ),
     deliveryDate: z.string(),
   }),
 });
@@ -80,10 +91,21 @@ const socialDatesSchema = z.object({
         start: z.string(),
         end: z.string(),
       })
-      .refine((range) => new Date(range.end) > new Date(range.start), {
-        message: "End date must be after start date",
-        path: ["end"],
-      }),
+      .refine(
+        (range) => {
+          const startDate = parseMomentDate(range.start);
+          const endDate = parseMomentDate(range.end);
+          return (
+            startDate.isValid() &&
+            endDate.isValid() &&
+            endDate.isAfter(startDate)
+          );
+        },
+        {
+          message: "End date must be after start date",
+          path: ["end"],
+        }
+      ),
   }),
 });
 
