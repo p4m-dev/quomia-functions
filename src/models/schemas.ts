@@ -13,7 +13,8 @@ export const fileSchema = z
       FileType.TEXT,
     ]),
   })
-  .optional();
+  .nullish()
+  .transform((val) => val ?? undefined);
 
 const baseBoxSchema = z
   .object({
@@ -21,9 +22,15 @@ const baseBoxSchema = z
     title: z.string().min(1, "Title is required"),
     type: z.enum([Type.FUTURE, Type.REWIND, Type.SOCIAL]),
     category: z.enum([Category.INTERACTIVE, Category.TEXT]),
-    message: z.string().optional(),
+    message: z
+      .string()
+      .nullish()
+      .transform((val) => val ?? undefined),
     file: fileSchema,
-    isAnonymous: z.boolean().optional(),
+    isAnonymous: z
+      .boolean()
+      .nullish()
+      .transform((val) => val ?? undefined),
   })
   .refine((data) => !(data.message && data.file), {
     message: "Either message or file can be present, not both",
