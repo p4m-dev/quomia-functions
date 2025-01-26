@@ -8,6 +8,7 @@ import {
   SocialSchema,
   FileSchema,
   Content,
+  FileType,
 } from "../models/types";
 
 const mapContent = (fileSchema: FileSchema, message?: string): Content => {
@@ -22,6 +23,8 @@ const mapContent = (fileSchema: FileSchema, message?: string): Content => {
   }
   return {
     message: localMessage,
+    filePath: "",
+    fileType: FileType.TEXT,
   };
 };
 

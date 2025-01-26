@@ -13,4 +13,4 @@ app.use("/box/future", boxFutureRouter);
 app.use("/box/social", boxSocialRouter);
 app.use("/timers", timerRouter);
 
-export const api = onRequest({ region: "europe-west3" }, app);
+export const api = onRequest({ region: "europe-west3", memory: "512MiB" }, app);
