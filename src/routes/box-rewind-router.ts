@@ -6,6 +6,8 @@ import { handleApiErrors } from "../utils/error-utils";
 const boxRewindRouter = Router();
 
 boxRewindRouter.post("/", async (req, res) => {
+  console.log(req.body);
+
   try {
     const validatedBody = boxRewindSchema.parse(req.body);
 

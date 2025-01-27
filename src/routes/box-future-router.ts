@@ -6,6 +6,8 @@ import { handleApiErrors } from "../utils/error-utils";
 const boxFutureRouter = Router();
 
 boxFutureRouter.post("/", async (req, res) => {
+  console.log(req.body);
+
   try {
     const validatedBody = boxFutureSchema.parse(req.body);
 

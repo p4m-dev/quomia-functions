@@ -7,6 +7,8 @@ import { BoxResponse } from "../models/types";
 const boxSocialRouter = Router();
 
 boxSocialRouter.post("/", async (req, res) => {
+  console.log(req.body);
+
   try {
     const validatedBody = boxSocialSchema.parse(req.body);
 
