@@ -4,14 +4,17 @@ import { parseMomentDate } from "../utils/date-utils";
 
 export const fileSchema = z
   .object({
-    name: z.string(),
-    content: z.string().base64(),
-    fileType: z.enum([
-      FileType.IMAGE,
-      FileType.VIDEO,
-      FileType.AUDIO,
-      FileType.TEXT,
-    ]),
+    downloadUrl: z.string().url(),
+    fileType: z.nativeEnum(FileType),
+    imageBlurhash: z
+      .string()
+      .nullish()
+      .transform((val) => val ?? undefined),
+    videoThumbnailUrl: z
+      .string()
+      .url()
+      .nullish()
+      .transform((val) => val ?? undefined),
   })
   .nullish()
   .transform((val) => val ?? undefined);
@@ -20,8 +23,8 @@ const baseBoxSchema = z
   .object({
     sender: z.string().min(1, "Sender is required"),
     title: z.string().min(1, "Title is required"),
-    type: z.enum([Type.FUTURE, Type.REWIND, Type.SOCIAL]),
-    category: z.enum([Category.INTERACTIVE, Category.TEXT]),
+    type: z.nativeEnum(Type),
+    category: z.nativeEnum(Category),
     message: z
       .string()
       .nullish()

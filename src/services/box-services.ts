@@ -2,7 +2,6 @@ import { collBoxes } from "../config/config";
 import { mapBoxFuture, mapBoxRewind, mapBoxSocial } from "../mapper/box-mapper";
 import {
   Box,
-  FileHelper,
   BoxResponse,
   FutureSchema,
   RewindSchema,
@@ -12,9 +11,7 @@ import {
   checkBoxAlreadyPurchased,
   checkFutureDate,
 } from "../helper/box-helper";
-import { saveAndRetrieveFileUrl } from "../helper/storage-helper";
 import { boxConverter } from "../helper/box-converter";
-import { mapFileHelper } from "../mapper/file-mapper";
 import TimeError from "../errors/time-error";
 
 const handleBoxRewind = async (rewindSchema: RewindSchema) => {
@@ -43,18 +40,6 @@ const handleBoxRewind = async (rewindSchema: RewindSchema) => {
     });
   }
 
-  // Only if file has been selected in input!
-  if (rewindSchema.file) {
-    const fileHelper: FileHelper = mapFileHelper(rewindSchema.file);
-
-    const downloadUrl = await saveAndRetrieveFileUrl(
-      fileHelper,
-      box.user.sender
-    );
-
-    box.content.filePath = downloadUrl;
-  }
-
   const docRef = await collBoxes.add(box);
   const createdBox = await docRef.get();
 
@@ -73,18 +58,6 @@ const handleBoxFuture = async (futureSchema: FutureSchema) => {
     throw new TimeError("Temporal slot already purchased!");
   }
 
-  // Only if file has been selected in input!
-  if (futureSchema.file) {
-    const fileHelper: FileHelper = mapFileHelper(futureSchema.file);
-
-    const downloadUrl = await saveAndRetrieveFileUrl(
-      fileHelper,
-      box.user.sender
-    );
-
-    box.content.filePath = downloadUrl;
-  }
-
   const docRef = await collBoxes.add(box);
   const createdBox = await docRef.get();
 
@@ -101,18 +74,6 @@ const handleBoxSocial = async (socialSchema: SocialSchema) => {
 
   if (isAlreadyPurchased) {
     throw new Error("Temporal slot already purchased!");
-  }
-
-  // Only if file has been selected in input!
-  if (socialSchema.file) {
-    const fileHelper: FileHelper = mapFileHelper(socialSchema.file);
-
-    const downloadUrl = await saveAndRetrieveFileUrl(
-      fileHelper,
-      box.user.sender
-    );
-
-    box.content.filePath = downloadUrl;
   }
 
   const docRef = await collBoxes.add(box);

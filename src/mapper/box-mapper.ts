@@ -12,18 +12,17 @@ import {
 } from "../models/types";
 
 const mapContent = (fileSchema: FileSchema, message?: string): Content => {
-  const localMessage = message ?? "";
-
   if (fileSchema) {
     return {
-      message: localMessage,
+      message,
       fileType: fileSchema.fileType,
-      filePath: "",
+      downloadUrl: fileSchema.downloadUrl,
+      imageBlurhash: fileSchema.imageBlurhash,
+      videoThumbnailUrl: fileSchema.videoThumbnailUrl,
     };
   }
   return {
-    message: localMessage,
-    filePath: "",
+    message,
     fileType: FileType.TEXT,
   };
 };

@@ -55,7 +55,9 @@ export interface Info {
 export interface Content {
   message?: string;
   fileType?: FileType;
-  filePath?: string;
+  downloadUrl?: string;
+  imageBlurhash?: string;
+  videoThumbnailUrl?: string;
 }
 
 export interface Dates {
@@ -88,8 +90,7 @@ export interface BoxResponse {
 }
 
 export interface FileHelper {
-  name: string;
-  content: string;
+  fileUrl: string;
   fileType: FileType;
 }
 
