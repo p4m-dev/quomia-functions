@@ -89,11 +89,6 @@ export interface BoxResponse {
   user: User;
 }
 
-export interface FileHelper {
-  fileUrl: string;
-  fileType: FileType;
-}
-
 type RewindSchema = z.infer<typeof boxRewindSchema>;
 
 type FutureSchema = z.infer<typeof boxFutureSchema>;
