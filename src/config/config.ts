@@ -13,5 +13,6 @@ db.settings({
 const bucket = getStorage().bucket();
 const collBoxes = db.collection("boxes");
 const collTimers = db.collection("timers");
+const collNfts = db.collection("nfts");
 
-export { db, collBoxes, collTimers, bucket };
+export { db, collBoxes, collTimers, collNfts, bucket };
