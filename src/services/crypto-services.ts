@@ -1,7 +1,12 @@
-import { checkNFTExistence, createNFT } from "../utils/crypto-utils";
-import TimeError from "../errors/time-error";
+import {
+  checkNFTExistence,
+  loadWallet,
+  mintNFT,
+  retrieveAirdrop,
+} from "../utils/crypto-utils";
 import { Box } from "../models/types";
 import { collNfts } from "../config/config";
+import TimeError from "../errors/time-error";
 
 const checkTimeSlotAvailability = async (startDate: Date, endDate: Date) => {
   // Check if temporal slot is free
@@ -14,12 +19,16 @@ const checkTimeSlotAvailability = async (startDate: Date, endDate: Date) => {
 };
 
 const saveNFT = async (box: Box) => {
-  const nft = await createNFT(box);
+  const keypair = await loadWallet();
+
+  await retrieveAirdrop(keypair);
+
+  const nft = await mintNFT(box, keypair);
 
   if (nft !== null) {
     const docRef = await collNfts.add(nft);
-    const createdBox = await docRef.get();
-    return createdBox;
+    const createdNft = await docRef.get();
+    return createdNft;
   }
   return null;
 };

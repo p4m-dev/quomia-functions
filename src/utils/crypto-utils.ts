@@ -10,30 +10,27 @@ import {
   Connection,
   Keypair,
   LAMPORTS_PER_SOL,
-  PublicKey,
 } from "@solana/web3.js";
 import {
   createNft,
   mplTokenMetadata,
 } from "@metaplex-foundation/mpl-token-metadata";
 import { irysUploader } from "@metaplex-foundation/umi-uploader-irys";
-import fs from "fs";
 import { fromWeb3JsKeypair } from "@metaplex-foundation/umi-web3js-adapters";
 import { Box } from "../models/types";
 import { mapJsonMetadata, mapNFT } from "../mapper/nft-mapper";
-import { collNfts } from "../config/config";
-import { Nft } from "@metaplex-foundation/js";
+import { bucket, collNfts } from "../config/config";
 import { NFT } from "../models/nft";
 
-const generateWallet = async () => {
-  return null;
+const loadWallet = async (): Promise<Keypair> => {
+  const file = bucket.file("wallets/wallet.json");
+  const [contents] = await file.download();
+  const secret = JSON.parse(contents.toString());
+  return Keypair.fromSecretKey(new Uint8Array(secret));
 };
 
-const retrieveAirdrop = async () => {
+const retrieveAirdrop = async (keypair: Keypair) => {
   try {
-    const secret = JSON.parse(fs.readFileSync("wallet.json", "utf8"));
-    const keypair = Keypair.fromSecretKey(new Uint8Array(secret));
-
     // 2. Airdrop su Devnet
     const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
     const airdropSignature = await connection.requestAirdrop(
@@ -47,12 +44,8 @@ const retrieveAirdrop = async () => {
   }
 };
 
-const createNFT = async (box: Box): Promise<NFT | null> => {
-  // 1. Load Existing wallet
-  const secret = JSON.parse(fs.readFileSync("wallet.json", "utf8"));
-  const keypair = Keypair.fromSecretKey(new Uint8Array(secret));
-
-  // 3. Umi adaptation
+const mintNFT = async (box: Box, keypair: Keypair): Promise<NFT | null> => {
+  // 1. Umi adaptation
   const umi = createUmi(clusterApiUrl("devnet"));
   const signer = createSignerFromKeypair(umi, fromWeb3JsKeypair(keypair));
   umi.use(keypairIdentity(signer)).use(mplTokenMetadata()).use(irysUploader());
@@ -98,4 +91,4 @@ const checkNFTExistence = async (startDate: Date, endDate: Date) => {
   return !docs.empty;
 };
 
-export { createNFT, retrieveAirdrop, checkNFTExistence };
+export { mintNFT, retrieveAirdrop, checkNFTExistence, loadWallet };

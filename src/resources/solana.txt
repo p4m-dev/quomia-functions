@@ -1,0 +1,2 @@
+PublicKey: FPLzmKPmGSGocsQopsBwUydr5hCKcX7RbBqtQSsiavjE
+Passphrase: BIP39

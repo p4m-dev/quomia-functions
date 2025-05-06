@@ -18,7 +18,7 @@ cryptoRouter.post("/", async (req, res) => {
 
     const doc = await saveNFT(box);
 
-    return res.status(500).json({ data: doc });
+    return res.status(200).json({ data: doc });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: "Internal server error" });
