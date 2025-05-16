@@ -42,7 +42,7 @@ cryptoRouter.get("/check-dates", async (req, res) => {
       return res.status(400).json({ error: "Invalid date format" });
     }
 
-    checkTimeSlotAvailability(start, end);
+    await checkTimeSlotAvailability(start, end);
 
     return res.status(200).send("Slot available");
   } catch (error) {

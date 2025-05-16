@@ -1,4 +1,4 @@
-import { NFT } from "../models/nft";
+import { NFT, NFTDB } from "../models/nft";
 import { Box } from "../models/types";
 import { JsonMetadata } from "@metaplex-foundation/js";
 
@@ -31,10 +31,11 @@ const mapNFT = (
   metadata: JsonMetadata,
   box: Box,
   uri: string,
-  mintAddress: string
-): NFT => {
+  mintAddress: string,
+  boxId: string
+): NFTDB => {
   return {
-    boxId: box.info.accessCode,
+    boxId: boxId,
     name: metadata.name ?? "",
     uri: uri,
     description: metadata.description,

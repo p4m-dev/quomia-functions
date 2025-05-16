@@ -84,8 +84,8 @@ const mintNFT = async (box: Box, keypair: Keypair): Promise<NFT | null> => {
 
 const checkNFTExistence = async (startDate: Date, endDate: Date) => {
   const docs = await collNfts
-    .where("dates.startDate", "<=", startDate)
-    .where("dates.endDate", ">=", endDate)
+    .where("startDate", "<=", endDate)
+    .where("endDate", ">=", startDate)
     .get();
 
   return !docs.empty;

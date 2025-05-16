@@ -5,6 +5,7 @@ import {
   boxSocialSchema,
   fileSchema,
 } from "./schemas";
+import { NFT } from "./nft";
 
 export enum Category {
   INTERACTIVE = "interactive",
@@ -82,11 +83,37 @@ export interface Box {
   updatedAt?: FirebaseFirestore.FieldValue;
 }
 
+export interface BoxDB {
+  boxId: string;
+  info: Info;
+  content: Content;
+  dates: Dates;
+  user: User;
+  createdAt?: FirebaseFirestore.FieldValue;
+  updatedAt?: FirebaseFirestore.FieldValue;
+}
+
 export interface BoxResponse {
   info: Info;
   content: Content;
   dates: Dates;
   user: User;
+}
+
+export interface BoxResponseDB {
+  boxId: string;
+  info: Info;
+  content: Content;
+  dates: Dates;
+  user: User;
+}
+
+export interface BoxResponseWithNFT {
+  info: Info;
+  content: Content;
+  dates: Dates;
+  user: User;
+  nft: NFT;
 }
 
 type RewindSchema = z.infer<typeof boxRewindSchema>;

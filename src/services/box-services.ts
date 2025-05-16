@@ -8,9 +8,9 @@ import {
   SocialSchema,
 } from "../models/types";
 import { checkFutureDate } from "../helper/box-helper";
-import { boxConverter } from "../helper/box-converter";
+import { boxConverter } from "../converter/box-converter";
 import TimeError from "../errors/time-error";
-import { checkTimeSlotAvailability } from "./crypto-services";
+import { checkTimeSlotAvailability, saveNFT } from "./crypto-services";
 
 const handleBoxRewind = async (rewindSchema: RewindSchema) => {
   const box: Box = mapBoxRewind(rewindSchema);
@@ -34,6 +34,8 @@ const handleBoxRewind = async (rewindSchema: RewindSchema) => {
   const docRef = await collBoxes.add(box);
   const createdBox = await docRef.get();
 
+  saveNFT(box);
+
   return createdBox;
 };
 
@@ -56,6 +58,8 @@ const handleBoxSocial = async (socialSchema: SocialSchema) => {
   const docRef = await collBoxes.add(box);
   const createdBox = await docRef.get();
 
+  saveNFT(box);
+
   return createdBox;
 };
 
@@ -63,6 +67,7 @@ const handleBoxSocial = async (socialSchema: SocialSchema) => {
 const retrieveSocialBoxes = async (): Promise<BoxResponse[]> => {
   try {
     const boxes: BoxResponse[] = [];
+
     const snapshot = await collBoxes
       .where("info.type", "==", "social")
       .orderBy("createdAt", "desc")

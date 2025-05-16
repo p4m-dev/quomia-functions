@@ -7,6 +7,8 @@ import {
 import { Box } from "../models/types";
 import { collNfts } from "../config/config";
 import TimeError from "../errors/time-error";
+import { NFT } from "../models/nft";
+import { nftConverter } from "../converter/nft-converter";
 
 const checkTimeSlotAvailability = async (startDate: Date, endDate: Date) => {
   // Check if temporal slot is free
@@ -33,4 +35,17 @@ const saveNFT = async (box: Box) => {
   return null;
 };
 
-export { checkTimeSlotAvailability, saveNFT };
+const retrieveNFT = async (boxId: string): Promise<NFT | null> => {
+  const nfts = await collNfts
+    .where("boxId", "==", boxId)
+    .withConverter(nftConverter)
+    .limit(1)
+    .get();
+
+  if (nfts.empty) {
+    return null;
+  }
+  return nfts.docs[0].data() as NFT;
+};
+
+export { checkTimeSlotAvailability, saveNFT, retrieveNFT };
