@@ -2,7 +2,7 @@ import {
   checkNFTExistence,
   loadWallet,
   mintNFT,
-  retrieveAirdrop,
+  maybeAirdrop,
 } from "../utils/crypto-utils";
 import { Box } from "../models/types";
 import { collNfts } from "../config/config";
@@ -20,12 +20,12 @@ const checkTimeSlotAvailability = async (startDate: Date, endDate: Date) => {
   }
 };
 
-const saveNFT = async (box: Box) => {
+const saveNFT = async (box: Box, boxId: string) => {
   const keypair = await loadWallet();
 
-  await retrieveAirdrop(keypair);
+  await maybeAirdrop(keypair);
 
-  const nft = await mintNFT(box, keypair);
+  const nft = await mintNFT(box, keypair, boxId);
 
   if (nft !== null) {
     const docRef = await collNfts.add(nft);

@@ -1,4 +1,4 @@
-import { NFT, NFTDB } from "../models/nft";
+import { NFTDB } from "../models/nft";
 import { Box } from "../models/types";
 import { JsonMetadata } from "@metaplex-foundation/js";
 

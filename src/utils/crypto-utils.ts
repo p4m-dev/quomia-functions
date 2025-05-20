@@ -29,22 +29,33 @@ const loadWallet = async (): Promise<Keypair> => {
   return Keypair.fromSecretKey(new Uint8Array(secret));
 };
 
-const retrieveAirdrop = async (keypair: Keypair) => {
+const maybeAirdrop = async (keypair: Keypair) => {
   try {
     // 2. Airdrop su Devnet
     const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
-    const airdropSignature = await connection.requestAirdrop(
-      keypair.publicKey,
-      LAMPORTS_PER_SOL
-    );
-    await connection.confirmTransaction(airdropSignature);
-    console.log("Airdrop completato!: ", keypair.publicKey.toBase58());
+    const balance = await connection.getBalance(keypair.publicKey);
+
+    const solBalance = balance / LAMPORTS_PER_SOL;
+    console.log("Balance: ", solBalance, "SOL");
+
+    if (balance < 0.1 * LAMPORTS_PER_SOL) {
+      const airdropSignature = await connection.requestAirdrop(
+        keypair.publicKey,
+        LAMPORTS_PER_SOL
+      );
+      await connection.confirmTransaction(airdropSignature);
+      console.log("Airdrop completato!: ", keypair.publicKey.toBase58());
+    }
   } catch (error) {
     console.error(error);
   }
 };
 
-const mintNFT = async (box: Box, keypair: Keypair): Promise<NFT | null> => {
+const mintNFT = async (
+  box: Box,
+  keypair: Keypair,
+  boxId: string
+): Promise<NFT | null> => {
   // 1. Umi adaptation
   const umi = createUmi(clusterApiUrl("devnet"));
   const signer = createSignerFromKeypair(umi, fromWeb3JsKeypair(keypair));
@@ -75,7 +86,7 @@ const mintNFT = async (box: Box, keypair: Keypair): Promise<NFT | null> => {
 
     console.log("NFT creato!");
 
-    return mapNFT(metadata, box, uri, mintAddress);
+    return mapNFT(metadata, box, uri, mintAddress, boxId);
   } catch (error) {
     console.error(error);
     return null;
@@ -91,4 +102,4 @@ const checkNFTExistence = async (startDate: Date, endDate: Date) => {
   return !docs.empty;
 };
 
-export { mintNFT, retrieveAirdrop, checkNFTExistence, loadWallet };
+export { mintNFT, maybeAirdrop, checkNFTExistence, loadWallet };

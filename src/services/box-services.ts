@@ -33,8 +33,9 @@ const handleBoxRewind = async (rewindSchema: RewindSchema) => {
 
   const docRef = await collBoxes.add(box);
   const createdBox = await docRef.get();
+  const boxId = createdBox.id;
 
-  saveNFT(box);
+  saveNFT(box, boxId);
 
   return createdBox;
 };
@@ -46,6 +47,9 @@ const handleBoxFuture = async (futureSchema: FutureSchema) => {
 
   const docRef = await collBoxes.add(box);
   const createdBox = await docRef.get();
+  const boxId = createdBox.id;
+
+  saveNFT(box, boxId);
 
   return createdBox;
 };
@@ -53,12 +57,13 @@ const handleBoxFuture = async (futureSchema: FutureSchema) => {
 const handleBoxSocial = async (socialSchema: SocialSchema) => {
   const box: Box = mapBoxSocial(socialSchema);
 
-  checkTimeSlotAvailability(box.dates.startDate, box.dates.endDate);
+  await checkTimeSlotAvailability(box.dates.startDate, box.dates.endDate);
 
   const docRef = await collBoxes.add(box);
   const createdBox = await docRef.get();
+  const boxId = createdBox.id;
 
-  saveNFT(box);
+  await saveNFT(box, boxId);
 
   return createdBox;
 };

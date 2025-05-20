@@ -16,7 +16,8 @@ cryptoRouter.post("/", async (req, res) => {
     const validatedBody = boxFutureSchema.parse(req.body);
     const box: Box = mapBoxFuture(validatedBody);
 
-    const doc = await saveNFT(box);
+    const boxId = "1312";
+    const doc = await saveNFT(box, boxId);
 
     return res.status(200).json({ data: doc });
   } catch (error) {
