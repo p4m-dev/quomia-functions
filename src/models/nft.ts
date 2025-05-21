@@ -7,6 +7,7 @@ export interface NFTDB {
   image?: string;
   startDate: Date;
   endDate: Date;
+  initialPrice: number;
 }
 
 export interface NFT {
@@ -17,4 +18,5 @@ export interface NFT {
   image?: string;
   startDate: Date;
   endDate: Date;
+  initialPrice: number;
 }

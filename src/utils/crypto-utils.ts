@@ -62,7 +62,13 @@ const mintNFT = async (
   umi.use(keypairIdentity(signer)).use(mplTokenMetadata()).use(irysUploader());
 
   try {
-    const metadata = mapJsonMetadata(box);
+    const initialPrice = getTimeTokenPrice(
+      box.dates.startDate,
+      box.dates.endDate
+    );
+    console.log("Computed price: ", initialPrice);
+
+    const metadata = mapJsonMetadata(box, initialPrice);
 
     // 4. Upload metadata
     const uri = await umi.uploader.uploadJson(metadata);
@@ -86,7 +92,7 @@ const mintNFT = async (
 
     console.log("NFT creato!");
 
-    return mapNFT(metadata, box, uri, mintAddress, boxId);
+    return mapNFT(metadata, box, uri, mintAddress, boxId, initialPrice);
   } catch (error) {
     console.error(error);
     return null;
@@ -102,4 +108,31 @@ const checkNFTExistence = async (startDate: Date, endDate: Date) => {
   return !docs.empty;
 };
 
-export { mintNFT, maybeAirdrop, checkNFTExistence, loadWallet };
+const getTimeTokenPrice = (startDate: Date, endDate: Date): number => {
+  const now = new Date();
+
+  const hoursUntilStart =
+    (startDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+
+  const durationHours =
+    (endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60);
+
+  let basePricePerHour: number;
+
+  if (hoursUntilStart < 1) basePricePerHour = 0.05;
+  else if (hoursUntilStart < 24) basePricePerHour = 0.03;
+  else if (hoursUntilStart < 168) basePricePerHour = 0.015;
+  else basePricePerHour = 0.005;
+
+  const totalPrice = basePricePerHour * durationHours;
+
+  return parseFloat(totalPrice.toFixed(4));
+};
+
+export {
+  mintNFT,
+  maybeAirdrop,
+  checkNFTExistence,
+  loadWallet,
+  getTimeTokenPrice,
+};

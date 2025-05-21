@@ -2,7 +2,8 @@ import { collBoxes } from "../config/config";
 import { mapBoxFuture, mapBoxRewind, mapBoxSocial } from "../mapper/box-mapper";
 import {
   Box,
-  BoxResponse,
+  BoxResponseWithNFT,
+  BoxResponseDB,
   FutureSchema,
   RewindSchema,
   SocialSchema,
@@ -10,13 +11,17 @@ import {
 import { checkFutureDate } from "../helper/box-helper";
 import { boxConverter } from "../converter/box-converter";
 import TimeError from "../errors/time-error";
-import { checkTimeSlotAvailability, saveNFT } from "./crypto-services";
+import {
+  checkTimeSlotAvailability,
+  retrieveNFT,
+  saveNFT,
+} from "./crypto-services";
 
 const handleBoxRewind = async (rewindSchema: RewindSchema) => {
   const box: Box = mapBoxRewind(rewindSchema);
 
   // Check if temporal slot is free
-  checkTimeSlotAvailability(box.dates.startDate, box.dates.endDate);
+  await checkTimeSlotAvailability(box.dates.startDate, box.dates.endDate);
 
   // Check if future dates are free
   const futureDates = box.dates.futureDates;
@@ -35,28 +40,22 @@ const handleBoxRewind = async (rewindSchema: RewindSchema) => {
   const createdBox = await docRef.get();
   const boxId = createdBox.id;
 
-  saveNFT(box, boxId);
+  await saveNFT(box, boxId);
 
   return createdBox;
 };
 
 const handleBoxFuture = async (futureSchema: FutureSchema) => {
   const box: Box = mapBoxFuture(futureSchema);
-
-  checkTimeSlotAvailability(box.dates.startDate, box.dates.endDate);
-
-  const docRef = await collBoxes.add(box);
-  const createdBox = await docRef.get();
-  const boxId = createdBox.id;
-
-  saveNFT(box, boxId);
-
-  return createdBox;
+  return await saveBox(box);
 };
 
 const handleBoxSocial = async (socialSchema: SocialSchema) => {
   const box: Box = mapBoxSocial(socialSchema);
+  return await saveBox(box);
+};
 
+const saveBox = async (box: Box) => {
   await checkTimeSlotAvailability(box.dates.startDate, box.dates.endDate);
 
   const docRef = await collBoxes.add(box);
@@ -69,9 +68,9 @@ const handleBoxSocial = async (socialSchema: SocialSchema) => {
 };
 
 // TODO: add pagination
-const retrieveSocialBoxes = async (): Promise<BoxResponse[]> => {
+const retrieveSocialBoxes = async (): Promise<BoxResponseWithNFT[]> => {
   try {
-    const boxes: BoxResponse[] = [];
+    const boxes: BoxResponseWithNFT[] = [];
 
     const snapshot = await collBoxes
       .where("info.type", "==", "social")
@@ -79,10 +78,19 @@ const retrieveSocialBoxes = async (): Promise<BoxResponse[]> => {
       .withConverter(boxConverter)
       .get();
 
-    snapshot.forEach((doc) => {
-      const box = { ...(doc.data() as BoxResponse) };
-      boxes.push(box);
-    });
+    for (const doc of snapshot.docs) {
+      const box = doc.data() as BoxResponseDB;
+      const boxId = doc.id;
+
+      const nft = await retrieveNFT(boxId);
+
+      if (nft !== null) {
+        boxes.push({
+          ...box,
+          nft: nft,
+        });
+      }
+    }
 
     return boxes;
   } catch (error: any) {

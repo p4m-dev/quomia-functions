@@ -8,7 +8,8 @@ const userRouter = Router();
 
 userRouter.get("/balance", async (req, res) => {
   try {
-    await retrieveBalance();
+    const balance = await retrieveBalance();
+    return res.status(200).json({ balance });
   } catch (error) {
     console.error("Error while retrieving balance: ", error);
     return res.status(500).json({ error: "Internal server error" });

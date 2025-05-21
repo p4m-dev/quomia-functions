@@ -2,7 +2,7 @@ import { NFTDB } from "../models/nft";
 import { Box } from "../models/types";
 import { JsonMetadata } from "@metaplex-foundation/js";
 
-const mapJsonMetadata = (box: Box): JsonMetadata => {
+const mapJsonMetadata = (box: Box, initialPrice: number): JsonMetadata => {
   const metadata: JsonMetadata = {
     name: box.info.title,
     attributes: [
@@ -22,6 +22,10 @@ const mapJsonMetadata = (box: Box): JsonMetadata => {
         trait_type: "End Date",
         value: box.dates.endDate.toISOString(),
       },
+      {
+        trait_type: "Price",
+        value: initialPrice.toString(),
+      },
     ],
   };
   return metadata;
@@ -32,7 +36,8 @@ const mapNFT = (
   box: Box,
   uri: string,
   mintAddress: string,
-  boxId: string
+  boxId: string,
+  initialPrice: number
 ): NFTDB => {
   return {
     boxId: boxId,
@@ -43,6 +48,7 @@ const mapNFT = (
     mintAddress: mintAddress,
     startDate: box.dates.startDate,
     endDate: box.dates.endDate,
+    initialPrice: initialPrice,
   };
 };
 

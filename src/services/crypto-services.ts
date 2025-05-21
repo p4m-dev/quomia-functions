@@ -48,4 +48,21 @@ const retrieveNFT = async (boxId: string): Promise<NFT | null> => {
   return nfts.docs[0].data() as NFT;
 };
 
-export { checkTimeSlotAvailability, saveNFT, retrieveNFT };
+const retrieveNFTByMintAddress = async (mintAddress: string) => {
+  const nfts = await collNfts
+    .where("mintAddress", "==", mintAddress)
+    .withConverter(nftConverter)
+    .get();
+
+  if (nfts.empty) {
+    return null;
+  }
+  return nfts.docs[0].data() as NFT;
+};
+
+export {
+  checkTimeSlotAvailability,
+  saveNFT,
+  retrieveNFT,
+  retrieveNFTByMintAddress,
+};
