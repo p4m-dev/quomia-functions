@@ -3,4 +3,6 @@ export interface Balance {
   priceBalance: string;
   nftsAmount: string;
   estimatedValue: string;
+  percentage: string;
+  lossProfit: string;
 }

@@ -54,7 +54,8 @@ const maybeAirdrop = async (keypair: Keypair) => {
 const mintNFT = async (
   box: Box,
   keypair: Keypair,
-  boxId: string
+  boxId: string,
+  currentPrice: number
 ): Promise<NFT | null> => {
   // 1. Umi adaptation
   const umi = createUmi(clusterApiUrl("devnet"));
@@ -62,13 +63,18 @@ const mintNFT = async (
   umi.use(keypairIdentity(signer)).use(mplTokenMetadata()).use(irysUploader());
 
   try {
-    const initialPrice = getTimeTokenPrice(
-      box.dates.startDate,
-      box.dates.endDate
-    );
-    console.log("Computed price: ", initialPrice);
+    const quantity = getTimeTokenPrice(box.dates.startDate, box.dates.endDate);
+    console.log("Computed SOL quantity: ", quantity);
 
-    const metadata = mapJsonMetadata(box, initialPrice);
+    const purchaseValue = quantity * currentPrice;
+    console.log("purchaseValue: ", purchaseValue);
+
+    const metadata = mapJsonMetadata(
+      box,
+      quantity,
+      currentPrice,
+      purchaseValue
+    );
 
     // 4. Upload metadata
     const uri = await umi.uploader.uploadJson(metadata);
@@ -92,7 +98,16 @@ const mintNFT = async (
 
     console.log("NFT creato!");
 
-    return mapNFT(metadata, box, uri, mintAddress, boxId, initialPrice);
+    return mapNFT(
+      metadata,
+      box,
+      uri,
+      mintAddress,
+      boxId,
+      quantity,
+      currentPrice,
+      purchaseValue
+    );
   } catch (error) {
     console.error(error);
     return null;
@@ -129,10 +144,31 @@ const getTimeTokenPrice = (startDate: Date, endDate: Date): number => {
   return parseFloat(totalPrice.toFixed(4));
 };
 
+const getLossProfitWithPercentage = (
+  purchaseValue: number,
+  priceBalance: number
+) => {
+  console.log("START Calculating Percentage!");
+
+  const lossProfit = priceBalance - purchaseValue;
+  console.log("lossProfit: ", lossProfit);
+
+  const percentage = (lossProfit / purchaseValue) * 100;
+
+  const symbol = percentage >= 0 ? "▲" : "▼";
+  const percentageStr = `${symbol} ${percentage.toFixed(2)}%`;
+
+  return {
+    percentage: percentageStr,
+    lossProfit: lossProfit.toFixed(4),
+  };
+};
+
 export {
   mintNFT,
   maybeAirdrop,
   checkNFTExistence,
   loadWallet,
   getTimeTokenPrice,
+  getLossProfitWithPercentage,
 };

@@ -9,6 +9,7 @@ import { collNfts } from "../config/config";
 import TimeError from "../errors/time-error";
 import { NFT } from "../models/nft";
 import { nftConverter } from "../converter/nft-converter";
+import { getSolanaPrice } from "../client/coingecko-client";
 
 const checkTimeSlotAvailability = async (startDate: Date, endDate: Date) => {
   // Check if temporal slot is free
@@ -25,7 +26,9 @@ const saveNFT = async (box: Box, boxId: string) => {
 
   await maybeAirdrop(keypair);
 
-  const nft = await mintNFT(box, keypair, boxId);
+  const currentPrice = await getSolanaPrice();
+
+  const nft = await mintNFT(box, keypair, boxId, currentPrice);
 
   if (nft !== null) {
     const docRef = await collNfts.add(nft);
