@@ -153,14 +153,12 @@ const getLossProfitWithPercentage = (
   const lossProfit = priceBalance - purchaseValue;
   console.log("lossProfit: ", lossProfit);
 
-  const percentage = (lossProfit / purchaseValue) * 100;
-
-  const symbol = percentage >= 0 ? "▲" : "▼";
-  const percentageStr = `${symbol} ${percentage.toFixed(2)}%`;
+  const percentage = lossProfit / purchaseValue;
+  console.log("Percentage: ", percentage);
 
   return {
-    percentage: percentageStr,
-    lossProfit: lossProfit.toFixed(4),
+    percentage,
+    lossProfit,
   };
 };
 

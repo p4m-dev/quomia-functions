@@ -30,7 +30,7 @@ const retrieveBalance = async (): Promise<Balance> => {
     }
   );
 
-  let totalAmount = 0;
+  let tokenAmount = 0;
   let totalEstimatedPrice = 0;
   let totalPurchaseValue = 0;
 
@@ -49,23 +49,12 @@ const retrieveBalance = async (): Promise<Balance> => {
 
     totalEstimatedPrice += nft.quantity;
     totalPurchaseValue += nft.purchaseValue;
-    totalAmount += amount;
+    tokenAmount += amount;
   }
-
-  const walletBalance = `${solBalance.toFixed(4)} SOL`;
-  console.log("walletBalance: ", walletBalance);
-
-  const nftsAmount = `${totalAmount} NFTs`;
-  console.log("nftsAmount: ", nftsAmount);
-
-  const estimatedValue = `${totalEstimatedPrice.toFixed(4)} SOL`;
-  console.log("estimatedValue: ", estimatedValue);
 
   console.log("totalPurchaseValue: ", totalPurchaseValue);
 
   const priceBalance = currentPrice * totalEstimatedPrice;
-  const priceBalanceStr = `${priceBalance.toFixed(4)} €`;
-  console.log("priceBalance: ", priceBalance);
 
   const { percentage, lossProfit } = getLossProfitWithPercentage(
     totalPurchaseValue,
@@ -73,14 +62,16 @@ const retrieveBalance = async (): Promise<Balance> => {
   );
   console.log("percentage: ", percentage);
 
-  return mapUserBalance(
-    walletBalance,
-    priceBalanceStr,
-    nftsAmount,
-    estimatedValue,
+  const userBalance = mapUserBalance(
+    solBalance,
+    priceBalance,
+    tokenAmount,
+    totalEstimatedPrice,
     percentage,
     lossProfit
   );
+  console.log("Balance: ", balance);
+  return userBalance;
 };
 
 const retrieveBoxesByUsernameAndBoxType = async (
