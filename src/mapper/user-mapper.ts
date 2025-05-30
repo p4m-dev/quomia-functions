@@ -48,6 +48,8 @@ const mapCurrency = (value: number) => {
   return Math.abs(value).toLocaleString("it-IT", {
     style: "currency",
     currency: "EUR",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 4,
   });
 };
 
