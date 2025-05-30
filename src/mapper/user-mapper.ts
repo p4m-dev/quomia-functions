@@ -22,7 +22,7 @@ const mapSOLValue = (value: number) => {
   return value
     .toLocaleString("it-IT", {
       minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
+      maximumFractionDigits: 4,
     })
     .concat(" SOL");
 };
@@ -51,4 +51,4 @@ const mapCurrency = (value: number) => {
   });
 };
 
-export { mapUserBalance, mapCurrency };
+export { mapUserBalance, mapSOLValue };

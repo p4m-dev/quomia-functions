@@ -1,7 +1,7 @@
 import { NFT, NFTDB } from "../models/nft";
 import { Box } from "../models/types";
 import { JsonMetadata } from "@metaplex-foundation/js";
-import { mapCurrency } from "./user-mapper";
+import { mapSOLValue } from "./user-mapper";
 
 const mapJsonMetadata = (
   box: Box,
@@ -71,7 +71,7 @@ const mapNFT = (
 };
 
 const mapNFTFromDB = (nft: NFTDB): NFT => {
-  return { ...nft, quantity: mapCurrency(nft.quantity) };
+  return { ...nft, quantity: mapSOLValue(nft.quantity) };
 };
 
 export { mapJsonMetadata, mapNFT, mapNFTFromDB };
