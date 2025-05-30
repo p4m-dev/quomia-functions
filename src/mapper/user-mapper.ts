@@ -30,7 +30,7 @@ const mapSOLValue = (value: number) => {
 const mapPercentage = (value: number): Item => {
   return {
     symbol: value >= 0 ? "▲" : "▼",
-    value: value.toLocaleString("it-IT", {
+    value: Math.abs(value).toLocaleString("it-IT", {
       style: "percent",
       minimumFractionDigits: 2,
     }),
@@ -45,7 +45,7 @@ const mapLossProfit = (value: number): Item => {
 };
 
 const mapCurrency = (value: number) => {
-  return value.toLocaleString("it-IT", {
+  return Math.abs(value).toLocaleString("it-IT", {
     style: "currency",
     currency: "EUR",
   });
