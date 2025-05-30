@@ -7,7 +7,7 @@ import {
 import { Box } from "../models/types";
 import { collNfts } from "../config/config";
 import TimeError from "../errors/time-error";
-import { NFT } from "../models/nft";
+import { NFTDB } from "../models/nft";
 import { nftConverter } from "../converter/nft-converter";
 import { getSolanaPrice } from "../client/coingecko-client";
 
@@ -38,7 +38,7 @@ const saveNFT = async (box: Box, boxId: string) => {
   return null;
 };
 
-const retrieveNFT = async (boxId: string): Promise<NFT | null> => {
+const retrieveNFT = async (boxId: string): Promise<NFTDB | null> => {
   const nfts = await collNfts
     .where("boxId", "==", boxId)
     .withConverter(nftConverter)
@@ -48,7 +48,7 @@ const retrieveNFT = async (boxId: string): Promise<NFT | null> => {
   if (nfts.empty) {
     return null;
   }
-  return nfts.docs[0].data() as NFT;
+  return nfts.docs[0].data() as NFTDB;
 };
 
 const retrieveNFTByMintAddress = async (mintAddress: string) => {
@@ -60,7 +60,7 @@ const retrieveNFTByMintAddress = async (mintAddress: string) => {
   if (nfts.empty) {
     return null;
   }
-  return nfts.docs[0].data() as NFT;
+  return nfts.docs[0].data() as NFTDB;
 };
 
 export {

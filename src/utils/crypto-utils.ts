@@ -20,7 +20,7 @@ import { fromWeb3JsKeypair } from "@metaplex-foundation/umi-web3js-adapters";
 import { Box } from "../models/types";
 import { mapJsonMetadata, mapNFT } from "../mapper/nft-mapper";
 import { bucket, collNfts } from "../config/config";
-import { NFT } from "../models/nft";
+import { NFTDB } from "../models/nft";
 
 const loadWallet = async (): Promise<Keypair> => {
   const file = bucket.file("wallets/wallet.json");
@@ -56,7 +56,7 @@ const mintNFT = async (
   keypair: Keypair,
   boxId: string,
   currentPrice: number
-): Promise<NFT | null> => {
+): Promise<NFTDB | null> => {
   // 1. Umi adaptation
   const umi = createUmi(clusterApiUrl("devnet"));
   const signer = createSignerFromKeypair(umi, fromWeb3JsKeypair(keypair));

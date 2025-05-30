@@ -16,6 +16,7 @@ import {
   retrieveNFT,
   saveNFT,
 } from "./crypto-services";
+import { mapNFTFromDB } from "../mapper/nft-mapper";
 
 const handleBoxRewind = async (rewindSchema: RewindSchema) => {
   const box: Box = mapBoxRewind(rewindSchema);
@@ -87,7 +88,7 @@ const retrieveSocialBoxes = async (): Promise<BoxResponseWithNFT[]> => {
       if (nft !== null) {
         boxes.push({
           ...box,
-          nft: nft,
+          nft: mapNFTFromDB(nft),
         });
       }
     }

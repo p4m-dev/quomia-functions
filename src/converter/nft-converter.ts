@@ -1,6 +1,6 @@
 import { FirestoreDataConverter } from "firebase-admin/firestore";
 import { formatDBDate } from "../utils/date-utils";
-import { NFT, NFTDB } from "../models/nft";
+import { NFTDB } from "../models/nft";
 
 export const nftConverter: FirestoreDataConverter<NFTDB> = {
   toFirestore(nft: NFTDB) {
@@ -15,7 +15,7 @@ export const nftConverter: FirestoreDataConverter<NFTDB> = {
       ...data,
       startDate: formatDBDate(data.startDate),
       endDate: formatDBDate(data.endDate),
-    } as NFT;
+    } as NFTDB;
 
     console.log(nft);
     return nft;

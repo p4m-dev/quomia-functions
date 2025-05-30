@@ -51,4 +51,4 @@ const mapCurrency = (value: number) => {
   });
 };
 
-export { mapUserBalance };
+export { mapUserBalance, mapCurrency };

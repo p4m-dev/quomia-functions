@@ -20,7 +20,7 @@ export interface NFT {
   image?: string;
   startDate: Date;
   endDate: Date;
-  quantity: number;
+  quantity: string;
   currentPrice: number;
   purchaseValue: number;
 }

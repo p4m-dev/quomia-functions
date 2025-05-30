@@ -12,6 +12,7 @@ import { getLossProfitWithPercentage, loadWallet } from "../utils/crypto-utils";
 import { mapUserBalance } from "../mapper/user-mapper";
 import { getSolanaPrice } from "../client/coingecko-client";
 import { Balance } from "../models/user";
+import { mapNFTFromDB } from "../mapper/nft-mapper";
 
 const retrieveBalance = async (): Promise<Balance> => {
   const keypair = await loadWallet();
@@ -98,12 +99,12 @@ const retrieveBoxesByUsernameAndBoxType = async (
     const box = doc.data() as BoxResponseDB;
     const boxId = doc.id;
 
-    const nft = await retrieveNFT(boxId);
+    const nftDB = await retrieveNFT(boxId);
 
-    if (nft !== null) {
+    if (nftDB !== null) {
       boxes.push({
         ...box,
-        nft: nft,
+        nft: mapNFTFromDB(nftDB),
       });
     }
   }
