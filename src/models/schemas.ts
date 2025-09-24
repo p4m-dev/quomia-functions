@@ -25,6 +25,11 @@ const baseBoxSchema = z
     title: z.string().min(1, "Title is required"),
     type: z.nativeEnum(Type),
     category: z.nativeEnum(Category),
+    location: z.object({
+      latitude: z.number(),
+      longitude: z.number(),
+      street: z.string(),
+    }),
     message: z
       .string()
       .nullish()
@@ -40,61 +45,7 @@ const baseBoxSchema = z
     path: ["message", "file"],
   });
 
-const receiverSchema = z.string();
-
-const rewindDatesSchema = z.object({
-  dates: z.object({
-    range: z
-      .object({
-        start: z.string(),
-        end: z.string(),
-      })
-      .refine(
-        (range) => {
-          const startDate = parseMomentDate(range.start);
-          const endDate = parseMomentDate(range.end);
-          return (
-            startDate.isValid() &&
-            endDate.isValid() &&
-            endDate.isAfter(startDate)
-          );
-        },
-        {
-          message: "End date must be after start date",
-          path: ["end"],
-        }
-      ),
-    future: z.array(z.string()),
-  }),
-});
-
-const futureDatesSchema = z.object({
-  dates: z.object({
-    range: z
-      .object({
-        start: z.string(),
-        end: z.string(),
-      })
-      .refine(
-        (range) => {
-          const startDate = parseMomentDate(range.start);
-          const endDate = parseMomentDate(range.end);
-          return (
-            startDate.isValid() &&
-            endDate.isValid() &&
-            endDate.isAfter(startDate)
-          );
-        },
-        {
-          message: "End date must be after start date",
-          path: ["end"],
-        }
-      ),
-    deliveryDate: z.string(),
-  }),
-});
-
-const socialDatesSchema = z.object({
+const datesSchema = z.object({
   dates: z.object({
     range: z
       .object({
@@ -119,25 +70,11 @@ const socialDatesSchema = z.object({
   }),
 });
 
-const boxRewindSchema = baseBoxSchema
-  .and(rewindDatesSchema.merge(z.object({ receiver: receiverSchema })))
-  .refine((data) => data.type === Type.REWIND, {
-    message: "Type must be REWIND for boxRewindSchema",
-    path: ["type"],
-  });
-
-const boxFutureSchema = baseBoxSchema
-  .and(futureDatesSchema.merge(z.object({ receiver: receiverSchema })))
-  .refine((data) => data.type === Type.FUTURE, {
-    message: "Type must be FUTURE for boxFutureSchema",
-    path: ["type"],
-  });
-
-const boxSocialSchema = baseBoxSchema
-  .and(socialDatesSchema)
+const boxSchema = baseBoxSchema
+  .and(datesSchema)
   .refine((data) => data.type === Type.SOCIAL, {
     message: "Type must be SOCIAL for boxSocialSchema",
     path: ["type"],
   });
 
-export { boxRewindSchema, boxFutureSchema, boxSocialSchema };
+export { boxSchema };

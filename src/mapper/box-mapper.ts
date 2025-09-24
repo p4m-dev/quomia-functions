@@ -1,15 +1,7 @@
 import { FieldValue } from "firebase-admin/firestore";
 import { generateAccessCode } from "../utils/box-utils";
 import { parseDate } from "../utils/date-utils";
-import {
-  Box,
-  FutureSchema,
-  RewindSchema,
-  SocialSchema,
-  FileSchema,
-  Content,
-  FileType,
-} from "../models/types";
+import { Box, BoxSchema, FileSchema, Content, FileType } from "../models/types";
 
 const mapContent = (fileSchema: FileSchema, message?: string): Content => {
   if (fileSchema) {
@@ -27,63 +19,13 @@ const mapContent = (fileSchema: FileSchema, message?: string): Content => {
   };
 };
 
-const mapBoxRewind = (rewindSchema: RewindSchema): Box => {
+const mapBox = (boxSchema: BoxSchema): Box => {
   return {
     info: {
-      title: rewindSchema.title,
-      type: rewindSchema.type,
-      category: rewindSchema.category,
-      isAnonymous: rewindSchema.isAnonymous ?? false,
-      accessCode: generateAccessCode(),
-    },
-    content: mapContent(rewindSchema.file, rewindSchema.message),
-    dates: {
-      startDate: parseDate(rewindSchema.dates.range.start),
-      endDate: parseDate(rewindSchema.dates.range.end),
-      futureDates: rewindSchema.dates.future.map((date) => parseDate(date)),
-    },
-    user: {
-      sender: rewindSchema.sender,
-      receiver: rewindSchema.receiver ?? "",
-      location: "Sciacca, Italia",
-    },
-    createdAt: FieldValue.serverTimestamp(),
-    updatedAt: FieldValue.serverTimestamp(),
-  };
-};
-
-const mapBoxFuture = (futureSchema: FutureSchema): Box => {
-  return {
-    info: {
-      title: futureSchema.title,
-      type: futureSchema.type,
-      category: futureSchema.category,
-      isAnonymous: futureSchema.isAnonymous ?? false,
-      accessCode: generateAccessCode(),
-    },
-    content: mapContent(futureSchema.file, futureSchema.message),
-    dates: {
-      startDate: parseDate(futureSchema.dates.range.start),
-      endDate: parseDate(futureSchema.dates.range.end),
-      deliveryDate: parseDate(futureSchema.dates.deliveryDate),
-    },
-    user: {
-      sender: futureSchema.sender,
-      receiver: futureSchema.receiver ?? "",
-      location: "Sciacca, Italia",
-    },
-    createdAt: FieldValue.serverTimestamp(),
-    updatedAt: FieldValue.serverTimestamp(),
-  };
-};
-
-const mapBoxSocial = (socialSchema: SocialSchema): Box => {
-  return {
-    info: {
-      title: socialSchema.title,
-      type: socialSchema.type,
-      category: socialSchema.category,
-      isAnonymous: socialSchema.isAnonymous ?? false,
+      title: boxSchema.title,
+      type: boxSchema.type,
+      category: boxSchema.category,
+      isAnonymous: boxSchema.isAnonymous ?? false,
       accessCode: generateAccessCode(),
       likes: 0,
       comments: {
@@ -91,13 +33,13 @@ const mapBoxSocial = (socialSchema: SocialSchema): Box => {
         timerComments: [],
       },
     },
-    content: mapContent(socialSchema.file, socialSchema.message),
+    content: mapContent(boxSchema.file, boxSchema.message),
     dates: {
-      startDate: parseDate(socialSchema.dates.range.start),
-      endDate: parseDate(socialSchema.dates.range.end),
+      startDate: parseDate(boxSchema.dates.range.start),
+      endDate: parseDate(boxSchema.dates.range.end),
     },
     user: {
-      sender: socialSchema.sender,
+      sender: boxSchema.sender,
       location: "Sciacca, Italia",
     },
     createdAt: FieldValue.serverTimestamp(),
@@ -105,4 +47,4 @@ const mapBoxSocial = (socialSchema: SocialSchema): Box => {
   };
 };
 
-export { mapBoxRewind, mapBoxFuture, mapBoxSocial };
+export { mapBox };

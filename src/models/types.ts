@@ -1,10 +1,5 @@
 import { z } from "zod";
-import {
-  boxFutureSchema,
-  boxRewindSchema,
-  boxSocialSchema,
-  fileSchema,
-} from "./schemas";
+import { boxSchema, fileSchema } from "./schemas";
 import { NFT } from "./nft";
 
 export enum Category {
@@ -116,12 +111,8 @@ export interface BoxResponseWithNFT {
   nft: NFT;
 }
 
-type RewindSchema = z.infer<typeof boxRewindSchema>;
-
-type FutureSchema = z.infer<typeof boxFutureSchema>;
-
-type SocialSchema = z.infer<typeof boxSocialSchema>;
+type BoxSchema = z.infer<typeof boxSchema>;
 
 type FileSchema = z.infer<typeof fileSchema>;
 
-export { RewindSchema, FutureSchema, SocialSchema, FileSchema };
+export { BoxSchema, FileSchema };

@@ -1,18 +1,18 @@
 import { Router } from "express";
-import { handleBoxSocial, retrieveSocialBoxes } from "../services/box-services";
-import { boxSocialSchema } from "../models/schemas";
+import { handleBox, retrieveBoxes } from "../services/box-services";
+import { boxSchema } from "../models/schemas";
 import { handleApiErrors } from "../utils/error-utils";
 import { BoxResponse } from "../models/types";
 
-const boxSocialRouter = Router();
+const boxRouter = Router();
 
-boxSocialRouter.post("/", async (req, res) => {
+boxRouter.post("/", async (req, res) => {
   console.log(req.body);
 
   try {
-    const validatedBody = boxSocialSchema.parse(req.body);
+    const validatedBody = boxSchema.parse(req.body);
 
-    const result = await handleBoxSocial(validatedBody);
+    const result = await handleBox(validatedBody);
 
     return res.status(201).json(result);
   } catch (error: any) {
@@ -21,9 +21,9 @@ boxSocialRouter.post("/", async (req, res) => {
   }
 });
 
-boxSocialRouter.get("/", async (req, res) => {
+boxRouter.get("/", async (req, res) => {
   try {
-    const boxes: BoxResponse[] = await retrieveSocialBoxes();
+    const boxes: BoxResponse[] = await retrieveBoxes();
 
     return res.status(200).json({ boxes });
   } catch (error) {
@@ -32,4 +32,4 @@ boxSocialRouter.get("/", async (req, res) => {
   }
 });
 
-export default boxSocialRouter;
+export default boxRouter;
