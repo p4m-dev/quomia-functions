@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { Category, FileType, Type } from "./types";
+import { Category, FileType } from "./types";
 import { parseMomentDate } from "../utils/date-utils";
 
 export const fileSchema = z
@@ -23,7 +23,6 @@ const baseBoxSchema = z
   .object({
     sender: z.string().min(1, "Sender is required"),
     title: z.string().min(1, "Title is required"),
-    type: z.nativeEnum(Type),
     category: z.nativeEnum(Category),
     location: z.object({
       latitude: z.number(),
@@ -70,11 +69,6 @@ const datesSchema = z.object({
   }),
 });
 
-const boxSchema = baseBoxSchema
-  .and(datesSchema)
-  .refine((data) => data.type === Type.SOCIAL, {
-    message: "Type must be SOCIAL for boxSocialSchema",
-    path: ["type"],
-  });
+const boxSchema = baseBoxSchema.and(datesSchema);
 
 export { boxSchema };

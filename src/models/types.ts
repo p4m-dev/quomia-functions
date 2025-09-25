@@ -7,12 +7,6 @@ export enum Category {
   TEXT = "text",
 }
 
-export enum Type {
-  FUTURE = "future",
-  REWIND = "rewind",
-  SOCIAL = "social",
-}
-
 export enum ContentType {
   JPG = "image",
   PNG = "image",
@@ -40,9 +34,7 @@ export interface Comments {
 
 export interface Info {
   title: string;
-  type: Type;
   category: Category;
-  isAnonymous?: boolean;
   accessCode: string;
   likes?: number;
   comments?: Comments;
@@ -59,8 +51,6 @@ export interface Content {
 export interface Dates {
   startDate: Date;
   endDate: Date;
-  deliveryDate?: Date;
-  futureDates?: Date[];
 }
 
 export interface User {
@@ -69,11 +59,18 @@ export interface User {
   location: string;
 }
 
+export interface Location {
+  latitude: number;
+  longitude: number;
+  street: string;
+}
+
 export interface Box {
   info: Info;
   content: Content;
   dates: Dates;
   user: User;
+  location: Location;
   createdAt?: FirebaseFirestore.FieldValue;
   updatedAt?: FirebaseFirestore.FieldValue;
 }

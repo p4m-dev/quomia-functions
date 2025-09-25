@@ -23,15 +23,18 @@ const mapBox = (boxSchema: BoxSchema): Box => {
   return {
     info: {
       title: boxSchema.title,
-      type: boxSchema.type,
       category: boxSchema.category,
-      isAnonymous: boxSchema.isAnonymous ?? false,
       accessCode: generateAccessCode(),
       likes: 0,
       comments: {
         totalOfComments: 0,
         timerComments: [],
       },
+    },
+    location: {
+      longitude: boxSchema.location.longitude,
+      latitude: boxSchema.location.latitude,
+      street: boxSchema.location.street,
     },
     content: mapContent(boxSchema.file, boxSchema.message),
     dates: {

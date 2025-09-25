@@ -37,7 +37,6 @@ const retrieveBoxes = async (): Promise<BoxResponseWithNFT[]> => {
     const boxes: BoxResponseWithNFT[] = [];
 
     const snapshot = await collBoxes
-      .where("info.type", "==", "social")
       .orderBy("createdAt", "desc")
       .withConverter(boxConverter)
       .get();

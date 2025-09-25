@@ -45,10 +45,7 @@ const retrieveNFT = async (boxId: string): Promise<NFTDB | null> => {
     .limit(1)
     .get();
 
-  if (nfts.empty) {
-    return null;
-  }
-  return nfts.docs[0].data() as NFTDB;
+  return nfts.empty ? null : (nfts.docs[0].data() as NFTDB);
 };
 
 const retrieveNFTByMintAddress = async (mintAddress: string) => {
@@ -57,10 +54,7 @@ const retrieveNFTByMintAddress = async (mintAddress: string) => {
     .withConverter(nftConverter)
     .get();
 
-  if (nfts.empty) {
-    return null;
-  }
-  return nfts.docs[0].data() as NFTDB;
+  return nfts.empty ? null : (nfts.docs[0].data() as NFTDB);
 };
 
 export {
