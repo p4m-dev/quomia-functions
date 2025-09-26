@@ -16,7 +16,6 @@ export const boxConverter: FirestoreDataConverter<BoxDB> = {
       dates: {
         startDate: formatDBDate(data.dates.startDate),
         endDate: formatDBDate(data.dates.endDate),
-        deliveryDate: formatDBDate(data.dates.deliveryDate),
       },
     } as BoxResponseDB;
     console.log(box);

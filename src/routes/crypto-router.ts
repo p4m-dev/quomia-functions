@@ -3,8 +3,8 @@ import {
   checkTimeSlotAvailability,
   saveNFT,
 } from "../services/crypto-services";
-import { mapBoxFuture } from "../mapper/box-mapper";
-import { boxFutureSchema } from "../models/schemas";
+import { mapBox } from "../mapper/box-mapper";
+import { boxSchema } from "../models/schemas";
 import { Box } from "../models/types";
 
 const cryptoRouter = Router();
@@ -13,8 +13,8 @@ cryptoRouter.post("/", async (req, res) => {
   console.log(req.body);
 
   try {
-    const validatedBody = boxFutureSchema.parse(req.body);
-    const box: Box = mapBoxFuture(validatedBody);
+    const validatedBody = boxSchema.parse(req.body);
+    const box: Box = mapBox(validatedBody);
 
     const boxId = "1312";
     const doc = await saveNFT(box, boxId);

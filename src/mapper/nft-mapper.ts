@@ -17,10 +17,6 @@ const mapJsonMetadata = (
         value: box.info.category,
       },
       {
-        trait_type: "Type",
-        value: box.info.type,
-      },
-      {
         trait_type: "Start Date",
         value: box.dates.startDate.toISOString(),
       },
